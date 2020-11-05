@@ -1,8 +1,7 @@
 # The Box
+<img width="250" height="250" src=/assests/Logo.png>
 
-<p align="center">
-    <img width="500" height="500" src=/assests/Logo.png>
-</p>
+[![Build Status](https://travis-ci.com/aquabellus/The-Box.svg?token=j9yvFkydydnFaRfy8yoE&branch=master)](https://travis-ci.com/aquabellus/The-Box)
 
 ### Concept
 <details>

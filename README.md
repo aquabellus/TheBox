@@ -18,7 +18,7 @@
 ## Documentation
 We Are Currently Writing [Documentation](https://aquabellus.gitbook.io/aqua-bellus/) Here.
 
-## Credit
+## Credits
 - [dickymuliafiqri](https://github.com/Dicky-MF) for write and maintenance this software.
 - [pudidi](https://github.com/pudidi) for write and maintenance this software.
 - [yutolx12](https://github.com/yutolx12) for write and maintenance this software.

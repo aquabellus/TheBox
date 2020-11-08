@@ -12,7 +12,7 @@
 ![Blueprint](/assests/Blueprint.png)
 
 #### Flowchart
-![Flowchart](/assests/Flowchart.jpg)
+![Flowchart](/assests/Flowchart.png)
 
 </details>
 

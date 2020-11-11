@@ -37,7 +37,7 @@ def hijau():
 def mulai():
     if(GPIO.input(8)==False):
         print("Mulai")
-    elif(GPIO.input(8)==True):
+    else:
         print("Masuk siaga I")
         siagaI()
 
@@ -52,7 +52,7 @@ def siagaI():
             s1 = 0
         else:
             print("Dari siaga I => mulai")
-    elif(GPIO.input(10)==True):
+    else:
         print("Masuk siaga II")
         siagaII()
 
@@ -67,7 +67,7 @@ def siagaII():
             s2 = 0
         else:
             print("Dari siaga II => mulai")
-    elif(GPIO.input(12)==True):
+    else:
         while(GPIO.input(16)==False):
             merah()
             sleep(0.5)

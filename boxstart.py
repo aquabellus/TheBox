@@ -10,9 +10,14 @@ GPIO.setup(4,GPIO.OUT)  #LED Biru
 GPIO.setup(8,GPIO.IN)   #Sensor Aman
 GPIO.setup(10,GPIO.IN)  #Sensor Siaga I
 GPIO.setup(12,GPIO.IN)  #Sensor Siaga II
+GPIO.setup(16,GPIO.IN,pull_up_down=GPIO.PUD_DOWN) #Tombol
+#Pin 3.3V => Pin Button
 
 s1 = 0
 s2 = 0
+
+def tombol():
+    print("Tombol telah ditekan")
 
 def merah():
     GPIO.output(2,True)
@@ -40,8 +45,10 @@ def siagaI():
     if(GPIO.input(10)==False):
         s1 = s1 + 1
         if s1 >= 20:
-            hijau()
-            sleep(5)
+            while(GPIO.input(16)==False):
+                hijau()
+                sleep(2)
+            tombol()
             s1 = 0
         else:
             print("Dari siaga I => mulai")
@@ -53,15 +60,19 @@ def siagaII():
     if(GPIO.input(12)==False):
         s2 = s2 + 1
         if s2 >= 10:
-            kuning()
-            sleep(5)
+            while(GPIO.input(16)==False):
+                kuning()
+                sleep(1)
+            tombol()
             s2 = 0
         else:
             print("Dari siaga II => mulai")
     elif(GPIO.input(12)==True):
-        merah()
-        sleep(10)
+        while(GPIO.input(16)==False):
+            merah()
+            sleep(0.5)
+        tombol()
 
 while True:
     mulai()
-    sleep(5)
+    sleep(2)

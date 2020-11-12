@@ -1,17 +1,11 @@
 # Alpha Build #
 
 ### 12/11/2020
-#### Error
-- Counter script
-
-#### Solved
-- Input GPIO
-- Button
+- Masalah pada "Counter Script"
+- Perbaikan pada GPIO.input
+- Penambahan Fitur "Button"
 
 ### 11/11/2020
-#### Error
-- Input GPIO
-- DNS Server
-
-#### Solved
-- Web Server
+- Masalah pada GPIO.input
+- Masalah pada DNS Server
+- Pembuatan Web Server

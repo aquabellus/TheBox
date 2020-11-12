@@ -1,8 +1,8 @@
 import RPi.GPIO as GPIO
 import time
 import json
-import os.path
-from os import path
+import os
+import getpass
 
 
 GPIO.setwarnings(False)
@@ -39,12 +39,13 @@ def hijau():
     GPIO.output(7,False)
 
 tgl = time.strftime("%d %b", time.localtime())
-
 bln = time.strftime("%b %Y", time.localtime())
-
+thn = time.strftime("%Y", time.localtime())
 jam = time.strftime("%H:%M", time.localtime())
 
-def write_json(data, filename=("{}.json").format(bln)):
+nama = getpass.getuser()
+
+def write_json(data, filename=("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln))):
     with open(filename, 'w') as jswrt:
         json.dump(data, jswrt, indent = 4)
 
@@ -64,15 +65,25 @@ s1 = int()
 s2 = int()
 
 while True:
-    if os.path.exists(("{}.json").format(bln)) == False:
-        with open(("{}.json").format(bln), "w") as outfile:
+    if os.path.exists("/home/{}/Documents/BoxDump.d".format(nama)) == False:
+        os.makedirs("/home/{}/Documents/BoxDump.d/{}".format(nama,thn))
+        with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln), "w") as outfile:
             outfile.write(json_object)
+    else:
+        if os.path.exists("/home/{}/Documents/BoxDump.d/{}".format(nama,thn)) == False:
+            os.makedirs("/home/{}/Documents/BoxDump.d/{}".format(nama,thn))
+            with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln), "w") as outfile:
+                outfile.write(json_object)
+        else:
+            if os.path.exists("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln)) == False:
+                with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln), "w") as outfile:
+                    outfile.write(json_object)
     netral()
     if (GPIO.input(8) == False):
         s1 += 1
         if s1 >= 20:
             s1 = 0
-            with open(("{}.json").format(bln)) as json_file:
+            with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln)) as json_file:
                 data = json.load(json_file)
                 wrjsn = data["BoxDump"]        
                 s1rpt = {
@@ -98,7 +109,7 @@ while True:
         s2 += 1
         if s2 >= 10:
             s2 = 0
-            with open(("{}.json").format(bln)) as json_file:
+            with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln)) as json_file:
                 data = json.load(json_file)
                 wrjsn = data["BoxDump"]        
                 s2rpt = {
@@ -119,9 +130,9 @@ while True:
                     print("Tombol Telah Ditekan")
                     break
         else:
-            print(("Status Siaga II Telah Ditekan Sebanyak {} Kali").format(s2))
+            print(("Status Siaga II Telah Terekam Sebanyak {} Kali").format(s2))
     elif (GPIO.input(12) == False):
-        with open(("{}.json").format(bln)) as json_file:
+        with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln)) as json_file:
             data = json.load(json_file)
             wrjsn = data["BoxDump"]        
             bhya = {

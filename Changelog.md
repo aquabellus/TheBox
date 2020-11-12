@@ -1,17 +1,17 @@
-# Alpha #
+# Alpha Build #
 
-#### 12/11/2020
-/// Error ///
+### 12/11/2020
+#### Error
 - Counter script
 
-/// Solved ///
+#### Solved
 - Input GPIO
 - Button
 
-#### 11/11/2020
-/// Error ///
+### 11/11/2020
+#### Error
 - Input GPIO
 - DNS Server
 
-/// Solved ///
+#### Solved
 - Web Server

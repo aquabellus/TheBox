@@ -1,5 +1,9 @@
 import RPi.GPIO as GPIO
 import time
+import json
+import os.path
+from os import path
+
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
@@ -34,21 +38,57 @@ def hijau():
     GPIO.output(5,True)
     GPIO.output(7,False)
 
+tgl = time.strftime("%d %b", time.localtime())
+
+bln = time.strftime("%b %Y", time.localtime())
+
+jam = time.strftime("%H:%M", time.localtime())
+
+def write_json(data, filename=("{}.json").format(bln)):
+    with open(filename, 'w') as jswrt:
+        json.dump(data, jswrt, indent = 4)
+
+tmprpt = {
+    "BoxDump" : [
+        {
+            "{}".format(tgl) : {
+                "Status" : "Mulai",
+                "Jam" : jam
+            }
+        }
+    ]
+}
+
+json_object = json.dumps(tmprpt, indent = 4)
 s1 = int()
 s2 = int()
 
 while True:
+    if os.path.exists(("{}.json").format(bln)) == False:
+        with open(("{}.json").format(bln), "w") as outfile:
+            outfile.write(json_object)
     netral()
     if (GPIO.input(8) == False):
         s1 += 1
         if s1 >= 20:
             s1 = 0
+            with open(("{}.json").format(bln)) as json_file:
+                data = json.load(json_file)
+                wrjsn = data["BoxDump"]        
+                s1rpt = {
+                    "{}".format(tgl) : {
+                        "Status" : "Siaga I",
+                        "Jam" : jam
+                    }
+                }
+                wrjsn.append(s1rpt)
+            write_json(data)
             while True:
                 if (GPIO.input(16) == False):
                     hijau()
-                    sleep(2)
+                    time.sleep(2)
                     netral()
-                    sleep(2)
+                    time.sleep(2)
                 else:
                     print("Tombol Telah Ditekan")
                     break
@@ -58,24 +98,46 @@ while True:
         s2 += 1
         if s2 >= 10:
             s2 = 0
+            with open(("{}.json").format(bln)) as json_file:
+                data = json.load(json_file)
+                wrjsn = data["BoxDump"]        
+                s2rpt = {
+                    "{}".format(tgl) : {
+                        "Status" : "Siaga II",
+                        "Jam" : jam
+                    }
+                }
+                wrjsn.append(s2rpt)
+            write_json(data)
             while True:
                 if (GPIO.input(16) == False):
                     kuning()
-                    sleep(1)
+                    time.sleep(1)
                     netral()
-                    sleep(1)
+                    time.sleep(1)
                 else:
                     print("Tombol Telah Ditekan")
                     break
         else:
             print(("Status Siaga II Telah Ditekan Sebanyak {} Kali").format(s2))
     elif (GPIO.input(12) == False):
+        with open(("{}.json").format(bln)) as json_file:
+            data = json.load(json_file)
+            wrjsn = data["BoxDump"]        
+            bhya = {
+                "{}".format(tgl) : {
+                    "Status" : "Bahaya",
+                    "Jam" : jam
+                }
+            }
+            wrjsn.append(bhya)
+        write_json(data)
         while True:
             if (GPIO.input(16) == False):
                 merah()
-                sleep(0.5)
+                time.sleep(0.5)
                 netral()
-                sleep(0.5)
+                time.sleep(0.5)
             else:
                 print("Tombol Telah Ditekan")
                 break
@@ -83,4 +145,8 @@ while True:
         GPIO.cleanup
     else:
         print("Status Aman")
-    sleep(5)
+    time.sleep(5)
+
+    if jam == "00:00":
+        s1 = 0
+        s2 = 0

@@ -13,12 +13,6 @@ GPIO.setup(12,GPIO.IN)  #Sensor Siaga II
 GPIO.setup(16,GPIO.IN,pull_up_down=GPIO.PUD_DOWN) #Tombol
 #Pin 3.3V => Pin Button
 
-s1 = 0
-s2 = 0
-
-def tombol():
-    print("Tombol telah ditekan")
-
 def netral():
     GPIO.output(3,False)
     GPIO.output(5,False)
@@ -40,17 +34,19 @@ def hijau():
     GPIO.output(7,False)
 
 def siagaI():
+    s1 = int()
     if (GPIO.input(8) == False):
         s1 = s1 + 1
         if s1 >= 20:
             while True:
-                try:
+                if (GPIO.input(16) == False):
                     hijau()
                     sleep(2)
                     netral()
                     sleep(2)
-                except (GPIO.input(16) == True):
-                    tombol()
+                else:
+                    print("Tombol telah ditekan")
+                    break
         else:
             sleep(2)
     else:
@@ -58,17 +54,19 @@ def siagaI():
         siagaII()
 
 def siagaII():
+    s2 = int()
     if (GPIO.input(10) == False):
         s2 = s2 + 1
         if s2 >= 10:
             while True:
-                try:
+                if (GPIO.input(16) == False):
                     kuning()
                     sleep(1)
                     netral()
                     sleep(1)
-                except (GPIO.input(16) == True):
-                    tombol()
+                else:
+                    print("Tombol telah ditekan")
+                    break
         else:
             sleep(2)
     else:
@@ -78,13 +76,14 @@ def siagaII():
 def bahaya():
     if (GPIO.input(12) == False):
         while True:
-            try:
+            if (GPIO.input(16) == False):
                 merah()
                 sleep(0.5)
                 netral()
                 sleep(0.5)
-            except (GPIO.input(16) == True):
-                tombol()
+            else:
+                print("Tombol telah ditekan")
+                break
     else:
         print("Aman")
         print("Mulai dari awal")
@@ -92,15 +91,6 @@ def bahaya():
 while True:
     try:
         siagaI()
-        if s1 == 20:
-            s1 = 0
-            s2 = 0
-        elif s2 == 10:
-            s1 = 0
-            s2 = 0
-        elif (GPIO.input(16) == True):
-            s1 = 0
-            s2 = 0
         sleep(2)
     except (KeyboardInterrupt,SystemExit):
         GPIO.cleanup()

@@ -7,9 +7,10 @@ GPIO.setmode(GPIO.BOARD)
 GPIO.setup(3,GPIO.OUT)  #LED Merah
 GPIO.setup(5,GPIO.OUT)  #LED Hijau
 GPIO.setup(7,GPIO.OUT)  #LED Biru
-GPIO.setup(8,GPIO.IN)   #Sensor Aman
-GPIO.setup(10,GPIO.IN)  #Sensor Siaga I
-GPIO.setup(12,GPIO.IN)  #Sensor Siaga II
+#GPIO.setup(11,GPIO.OUT) #LED VCC
+GPIO.setup(8,GPIO.IN)   #Sensor Siaga I
+GPIO.setup(10,GPIO.IN)  #Sensor Siaga II
+GPIO.setup(12,GPIO.IN)  #Sensor Bahaya
 GPIO.setup(16,GPIO.IN,pull_up_down=GPIO.PUD_DOWN) #Tombol
 #Pin 3.3V => Pin Button
 
@@ -33,11 +34,15 @@ def hijau():
     GPIO.output(5,True)
     GPIO.output(7,False)
 
-def siagaI():
-    s1 = int()
+s1 = int()
+s2 = int()
+
+while True:
+    netral()
     if (GPIO.input(8) == False):
-        s1 = s1 + 1
+        s1 += 1
         if s1 >= 20:
+            s1 = 0
             while True:
                 if (GPIO.input(16) == False):
                     hijau()
@@ -45,19 +50,14 @@ def siagaI():
                     netral()
                     sleep(2)
                 else:
-                    print("Tombol telah ditekan")
+                    print("Tombol Telah Ditekan")
                     break
         else:
-            sleep(2)
-    else:
-        print("Cek Siaga II")
-        siagaII()
-
-def siagaII():
-    s2 = int()
-    if (GPIO.input(10) == False):
-        s2 = s2 + 1
+            print(("Status Siaga I Telah Terekam Sebanyak : {} Kali").format(s1))
+    elif (GPIO.input(10) == False):
+        s2 += 1
         if s2 >= 10:
+            s2 = 0
             while True:
                 if (GPIO.input(16) == False):
                     kuning()
@@ -65,16 +65,11 @@ def siagaII():
                     netral()
                     sleep(1)
                 else:
-                    print("Tombol telah ditekan")
+                    print("Tombol Telah Ditekan")
                     break
         else:
-            sleep(2)
-    else:
-        print("Cek Bahaya")
-        bahaya()
-
-def bahaya():
-    if (GPIO.input(12) == False):
+            print(("Status Siaga II Telah Ditekan Sebanyak {} Kali").format(s2))
+    elif (GPIO.input(12) == False):
         while True:
             if (GPIO.input(16) == False):
                 merah()
@@ -82,15 +77,10 @@ def bahaya():
                 netral()
                 sleep(0.5)
             else:
-                print("Tombol telah ditekan")
+                print("Tombol Telah Ditekan")
                 break
+    elif (KeyboardInterrupt,SystemExit):
+        GPIO.cleanup
     else:
-        print("Aman")
-        print("Mulai dari awal")
-        
-while True:
-    try:
-        siagaI()
-        sleep(2)
-    except (KeyboardInterrupt,SystemExit):
-        GPIO.cleanup()
+        print("Status Aman")
+    sleep(5)

@@ -82,6 +82,7 @@ while True:
     if (GPIO.input(8) == False):
         s1 += 1
         if s1 >= 20:
+            Scripts.bot.handle()
             s1 = 0
             with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln)) as json_file:
                 data = json.load(json_file)
@@ -108,6 +109,7 @@ while True:
     elif (GPIO.input(10) == False):
         s2 += 1
         if s2 >= 10:
+            Scripts.bot.handle()
             s2 = 0
             with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln)) as json_file:
                 data = json.load(json_file)
@@ -132,6 +134,7 @@ while True:
         else:
             print(("Status Siaga II Telah Terekam Sebanyak {} Kali").format(s2))
     elif (GPIO.input(12) == False):
+        Scripts.bot.handle()
         with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln)) as json_file:
             data = json.load(json_file)
             wrjsn = data["BoxDump"]        

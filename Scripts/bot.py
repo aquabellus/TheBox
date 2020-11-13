@@ -2,7 +2,7 @@ import telepot
 import time
 import os
 
-aquaBot = telepot.Bot("1480116644:AAHAWxJ0nv7Ahc0r60_0jFpNedly3lqDxd4")
+aquaBot = telepot.Bot("1480116644:AAHAWxJ0nv7AhcOr6O_OjFpNedly3lqDxd4")
 aquaBot.getMe()
 
 def handle(msg):

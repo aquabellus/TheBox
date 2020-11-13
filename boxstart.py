@@ -3,7 +3,7 @@ import time
 import json
 import os
 import getpass
-
+import Scripts.bot
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
@@ -19,24 +19,24 @@ GPIO.setup(16,GPIO.IN,pull_up_down=GPIO.PUD_DOWN) #Tombol
 #Pin 3.3V => Pin Button
 
 def netral():
-    GPIO.output(3,False)
-    GPIO.output(5,False)
-    GPIO.output(7,False)
+    GPIO.output(3,True)
+    GPIO.output(5,True)
+    GPIO.output(7,True)
 
 def merah():
-    GPIO.output(3,True)
-    GPIO.output(5,False)
-    GPIO.output(7,False)
-
-def kuning():
-    GPIO.output(3,True)
-    GPIO.output(5,True)
-    GPIO.output(7,False)
-
-def hijau():
     GPIO.output(3,False)
     GPIO.output(5,True)
-    GPIO.output(7,False)
+    GPIO.output(7,True)
+
+def kuning():
+    GPIO.output(3,False)
+    GPIO.output(5,False)
+    GPIO.output(7,True)
+
+def hijau():
+    GPIO.output(3,True)
+    GPIO.output(5,False)
+    GPIO.output(7,True)
 
 tgl = time.strftime("%d %b", time.localtime())
 bln = time.strftime("%b %Y", time.localtime())
@@ -104,7 +104,7 @@ while True:
                     print("Tombol Telah Ditekan")
                     break
         else:
-            print(("Status Siaga I Telah Terekam Sebanyak : {} Kali").format(s1))
+            print(("Status Siaga I Telah Terekam Sebanyak {} Kali").format(s1))
     elif (GPIO.input(10) == False):
         s2 += 1
         if s2 >= 10:
@@ -152,11 +152,9 @@ while True:
             else:
                 print("Tombol Telah Ditekan")
                 break
-    elif (KeyboardInterrupt,SystemExit):
-        GPIO.cleanup
     else:
         print("Status Aman")
-    time.sleep(5)
+    time.sleep(0.5)
 
     if jam == "00:00":
         s1 = 0

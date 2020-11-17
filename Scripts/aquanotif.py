@@ -1,5 +1,5 @@
-from aquarefile import time, telepot, os, json, getpass, re, math, random, pandas
-from aquarefile import nama, jam, tgl, thn, bln, full
+import time, telepot, json, re, random, pandas
+from Scripts.aquarefile import nama, jam, tgl, thn, bln, full
 saat = str()
 
 aquaBot = telepot.Bot("1480116644:AAHAWxJ0nv7AhcOr6O_OjFpNedly3lqDxd4")
@@ -7,7 +7,6 @@ aquaBot.getMe()
 
 file_json = open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln))
 data = json.loads(file_json.read())
-convert = pandas.DataFrame(data['{}'.format(tgl)])
 
 def greet():
     if (re.compile(r"0\d\:\d\d").search(jam)):
@@ -54,4 +53,5 @@ print("Masukkan Perintah : ")
 
 while True:
         greet()
-        # time.sleep(5)
+        convert = pandas.DataFrame(data['{}'.format(tgl)])
+        time.sleep(5)

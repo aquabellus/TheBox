@@ -1,5 +1,5 @@
 import RPi.GPIO as GPIO
-from Scripts.aquarefile import time, telepot, os, json, getpass, re, math, random, pandas
+import time, json
 from Scripts.aquarefile import nama, jam, tgl, thn, bln, full, cek, write_json, json_object
 from Scripts.aquanotif import notif
 

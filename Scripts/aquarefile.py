@@ -1,4 +1,4 @@
-import telepot, time, os, json, getpass, re, math, random, pandas
+import telepot, time, os, json, getpass
 
 tgl = time.strftime("%d %b", time.localtime())
 bln = time.strftime("%b %Y", time.localtime())
@@ -31,9 +31,9 @@ tmprpt = {
     ]
 }
 
+json_object = json.dumps(tmprpt, indent = 4)
+
 def write_json(data, filename=("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln))):
     with open(filename, 'w') as jswrt:
         json.dump(data, jswrt, indent = 4)
-
-json_object = json.dumps(tmprpt, indent = 4)
 

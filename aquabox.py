@@ -1,7 +1,5 @@
 import RPi.GPIO as GPIO
-import time, json
-from Scripts.aquarefile import nama, jam, tgl, thn, bln, full, cek, write_json, json_object
-from Scripts.aquanotif import notif
+import time, telepot, os, json, getpass, re, math, random, pandas
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
@@ -35,12 +33,104 @@ def hijau():
     GPIO.output(5,False)
     GPIO.output(7,True)
 
+tgl = time.strftime("%d %b", time.localtime())
+bln = time.strftime("%b %Y", time.localtime())
+thn = time.strftime("%Y", time.localtime())
+jam = time.strftime("%H:%M", time.localtime())
+full = time.strftime("%d %b %Y", time.localtime())
+nama = getpass.getuser()
+saat = str()
 s1 = int()
 s2 = int()
 
+
+tmprpt = {
+    "{}".format(tgl) : [
+        {
+            "Status" : "Mulai",
+            "Jam" : jam
+        }
+    ]
+}
+
+def cek():
+    if os.path.exists("/home/{}/Documents/BoxDump.d".format(nama)) == False:
+        os.makedirs("/home/{}/Documents/BoxDump.d/{}".format(nama,thn))
+        with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln), "w") as outfile:
+            outfile.write(json_object)
+    else:
+        if os.path.exists("/home/{}/Documents/BoxDump.d/{}".format(nama,thn)) == False:
+            os.makedirs("/home/{}/Documents/BoxDump.d/{}".format(nama,thn))
+            with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln), "w") as outfile:
+                outfile.write(json_object)
+        else:
+            if os.path.exists("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln)) == False:
+                with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln), "w") as outfile:
+                    outfile.write(json_object)
+
+json_object = json.dumps(tmprpt, indent = 4)
+
+def write_json(data, filename=("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln))):
+    with open(filename, 'w') as jswrt:
+        json.dump(data, jswrt, indent = 4)
+
+aquaBot = telepot.Bot("1480116644:AAHAWxJ0nv7AhcOr6O_OjFpNedly3lqDxd4")
+telecheck = aquaBot.getMe()
+
+cek()
+
+file_json = open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln))
+data = json.loads(file_json.read())
+
+def greet():
+    if (re.compile(r"0\d\:\d\d").search(jam)):
+        saat = "Pagi"
+    elif (re.compile(r"1[01234]\:\d\d").search(jam)):
+        saat = "Siang"
+    elif (re.compile(r"1[5678]\:\d\d").search(jam)):
+        saat = "Sore"
+    else:
+        saat = "Malam"
+
+def tlgrm(msg):
+    chat_id = msg["chat"]["id"]
+    chat_type = msg["chat"]["type"]
+    command = msg["text"]
+    
+    print("Perintah diterima : {}".format(command))
+
+    if (re.compile(r"/last").search(command)):
+        aquaBot.sendMessage(chat_id, f"<b>Status Terakhir {'{}'.format(full)}</b> :\n\n{(convert.tail(1))}","HTML")
+    elif (re.compile(r"/full").search(command)):
+        aquaBot.sendMessage(chat_id, f"<b>Tanggal {'{}'.format(full)}</b> :\n\n{(convert)}","HTML")
+
+    elif (re.compile(r"/aqua").search(command)):
+        pesan = [
+            "Dalem ?",
+            "Kenapa ?",
+            "Hadir"
+        ]
+        aquaBot.sendMessage(chat_id, "{}".format(pesan[random.randrange(len(pesan))]))
+    elif (re.compile(r"/id").search(command)):
+        if chat_type == "private":
+            aquaBot.sendMessage(chat_id, "Hai {}\nSelamat {}\nChat ID kamu adalah : <code>{}</code>".format(msg["chat"]["first_name"], saat, chat_id),"HTML")
+        elif chat_type == "supergroup":
+            aquaBot.sendMessage(chat_id, "Hai {}\nSelamat {}\nChat ID kamu adalah : <code>{}</code>\nChat ID grup ini adalah : <code>{}</code>".format(msg["from"]["first_name"], saat, msg["from"]["id"],chat_id),"HTML")
+        else :
+            aquaBot.sendMessage(chat_id, "Hai\nSelamat {}\nChat ID {} ini adalah : <code>{}</code>".format(saat, chat_type, chat_id),"HTML")
+
+def notif(status,jam):
+    aquaBot.sendMessage(-1001419749036,"Status {} Pada Pukul {}".format(status,jam))
+
+aquaBot.message_loop(tlgrm)
+print(telecheck)
+print("Masukkan Perintah : ")
+
 while True:
+    greet()
     cek()
     netral()
+    convert = pandas.DataFrame(data['{}'.format(tgl)])
     if (GPIO.input(8) == False):
         s1 += 1
         if s1 >= 20:
@@ -113,8 +203,7 @@ while True:
                 break
     else:
         print("Status Aman")
-
-    import Scripts.aquanotif
+    
     time.sleep(0.5)
 
     if jam == "00:00":

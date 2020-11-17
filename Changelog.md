@@ -1,5 +1,14 @@
 # Alpha Build #
 
+### 17/11/2020
+- 
+
+### 16/11/2020
+- Perbaikan pada "Looping Script"
+- Pemasangan "Database (MariaDB)"
+- Penambahan "aquanotif.py" sebagai script untuk mengirim notifikasi pada pengguna
+- Penambahan "Helper.json" sebagai data pembantu
+
 ### 13/11/2020
 - Masalah pada "Looping Script"
 - Perbaikan pada "Counter input"

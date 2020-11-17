@@ -1,7 +1,11 @@
 # Alpha Build #
 
 ### 17/11/2020
-- 
+- Penambahan "Web Template" oleh [HTML5 UP](https://html5up.net)
+- Pembuatan localhost
+- Perbaikan dan "Rebase" pada "aquabox.py"
+- Pembuatan "Archived"
+- Perbaikan pada bot "Aqua"
 
 ### 16/11/2020
 - Perbaikan pada "Looping Script"

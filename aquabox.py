@@ -37,8 +37,8 @@ def hijau():
 tgl = time.strftime("%d %b", time.localtime())
 bln = time.strftime("%b %Y", time.localtime())
 thn = time.strftime("%Y", time.localtime())
-jam = time.strftime("%H:%M", time.localtime())
-full = time.strftime("%d %b %Y", time.localtime())
+jam = time.strftime("%H:%M:%S", time.localtime())
+full = time.strftime("%Y/%m/%d", time.localtime())
 nama = getpass.getuser()
 saat = str()
 s1 = int()
@@ -147,8 +147,8 @@ def pressed():
 
 def custom():
     pesan = [
-        "Bahaya bahayaaaa Aqua mendeteksi kemungkinan banjir"
-        "Wi Wu Wi Wu Wi Wuuuuuu"
+        "Bahaya bahayaaaa Aqua mendeteksi kemungkinan banjir",
+        "Wi Wu Wi Wu Wi Wuuuuuu",
         "Sudah terdeteksi bahayaaa\nAyo cek dan di tekan tombolnya"
     ]
     aquaBot.sendMessage(-1001419749036, pesan[random.randrange(len(pesan))], "HTML")

@@ -1,5 +1,9 @@
 # Alpha Build #
 
+### 18/11/2020
+- Menambahkan fitur pada bot
+- Perbaikan bug
+
 ### 17/11/2020
 - Penambahan "Web Template" oleh [HTML5 UP](https://html5up.net)
 - Pembuatan localhost

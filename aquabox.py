@@ -1,5 +1,6 @@
 import RPi.GPIO as GPIO
 import time, telepot, os, json, getpass, re, math, random, pandas
+from telepot.namedtuple import ReplyKeyboardMarkup
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
@@ -45,7 +46,7 @@ s2 = int()
 
 
 tmprpt = {
-    "{}".format(tgl) : [
+    "{}".format(full) : [
         {
             "Status" : "Mulai",
             "Jam" : jam
@@ -99,8 +100,15 @@ def tlgrm(msg):
     
     print("Perintah diterima : {}".format(command))
 
-    if (re.compile(r"/last").search(command)):
+    if (re.compile(r"/start").search(command)):
+        keyboard = ReplyKeyboardMarkup(keyboard=[["/aqua"]],resize_keyboard=True, one_time_keyboard=True)
+        pesan = "Halo, namaku Aqua\nAku adalah bot yang akan membantumu untuk mengontrol alat-alat yang dibuat oleh aquabellus."
+        pesan += "\nKalo ingin memanggilku, pencet tombol yang disediakan yaa"
+        aquaBot.sendMessage(chat_id, pesan, "HTML", reply_markup=keyboard)
+
+    elif (re.compile(r"/last").search(command)):
         aquaBot.sendMessage(chat_id, f"<b>Status Terakhir {'{}'.format(full)}</b> :\n\n{(convert.tail(1))}","HTML")
+
     elif (re.compile(r"/full").search(command)):
         aquaBot.sendMessage(chat_id, f"<b>Tanggal {'{}'.format(full)}</b> :\n\n{(convert)}","HTML")
 
@@ -111,6 +119,13 @@ def tlgrm(msg):
             "Hadir"
         ]
         aquaBot.sendMessage(chat_id, "{}".format(pesan[random.randrange(len(pesan))]))
+
+    elif (re.compile(r"/about").search(command)):
+        pesan = "Aqua adalah bot yang dibuat untuk membantu pengguna dalam menggunakan produk-produk aquabellus\n"
+        pesan += "Untuk keterangan lebih lanjut, silahkan menuju ke tautan berikut.\n"
+        pesan += "<a href='https://github.com/aquabellus'>Github</a>"
+        aquaBot.sendMessage(chat_id, pesan, "HTML")
+
     elif (re.compile(r"/id").search(command)):
         if chat_type == "private":
             aquaBot.sendMessage(chat_id, "Hai {}\nSelamat {}\nChat ID kamu adalah : <code>{}</code>".format(msg["chat"]["first_name"], saat, chat_id),"HTML")
@@ -122,6 +137,22 @@ def tlgrm(msg):
 def notif(status,jam):
     aquaBot.sendMessage(-1001419749036,"Status {} Pada Pukul {}".format(status,jam))
 
+def pressed():
+    pesan = [
+        "Tombol sudah ditekaaaan terimakasih",
+        "Notifikasi telah dimatikan kakak",
+        "Terimakasih atas bantuannya XD"
+    ]
+    aquaBot.sendMessage(-1001419749036, pesan[random.randrange(len(pesan))], "HTML")
+
+def custom():
+    pesan = [
+        "Bahaya bahayaaaa Aqua mendeteksi kemungkinan banjir"
+        "Wi Wu Wi Wu Wi Wuuuuuu"
+        "Sudah terdeteksi bahayaaa\nAyo cek dan di tekan tombolnya"
+    ]
+    aquaBot.sendMessage(-1001419749036, pesan[random.randrange(len(pesan))], "HTML")
+
 aquaBot.message_loop(tlgrm)
 print(telecheck)
 print("Masukkan Perintah : ")
@@ -130,7 +161,7 @@ while True:
     greet()
     cek()
     netral()
-    convert = pandas.DataFrame(data['{}'.format(tgl)])
+    convert = pandas.DataFrame(data['{}'.format(full)])
     if (GPIO.input(8) == False):
         s1 += 1
         if s1 >= 20:
@@ -138,22 +169,13 @@ while True:
             notif("Siaga I",jam)
             with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln)) as json_file:
                 data = json.load(json_file)
-                wrjsn = data["{}".format(tgl)]        
+                wrjsn = data["{}".format(full)]        
                 s1rpt = {
                     "Status" : "Siaga I",
                     "Jam" : jam
                 }
                 wrjsn.append(s1rpt)
             write_json(data)
-            while True:
-                if (GPIO.input(16) == False):
-                    hijau()
-                    time.sleep(2)
-                    netral()
-                    time.sleep(2)
-                else:
-                    print("Tombol Telah Ditekan")
-                    break
         else:
             print(("Status Siaga I Telah Terekam Sebanyak {} Kali").format(s1))
     elif (GPIO.input(10) == False):
@@ -163,29 +185,20 @@ while True:
             notif("Siaga II",jam)
             with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln)) as json_file:
                 data = json.load(json_file)
-                wrjsn = data["{}".format(tgl)]        
+                wrjsn = data["{}".format(full)]        
                 s2rpt = {
                     "Status" : "Siaga II",
                     "Jam" : jam
                 }
                 wrjsn.append(s2rpt)
             write_json(data)
-            while True:
-                if (GPIO.input(16) == False):
-                    kuning()
-                    time.sleep(1)
-                    netral()
-                    time.sleep(1)
-                else:
-                    print("Tombol Telah Ditekan")
-                    break
         else:
             print(("Status Siaga II Telah Terekam Sebanyak {} Kali").format(s2))
     elif (GPIO.input(12) == False):
         notif("Bahaya",jam)
         with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln)) as json_file:
             data = json.load(json_file)
-            wrjsn = data["{}".format(tgl)]        
+            wrjsn = data["{}".format(full)]        
             bhya = {
                 "Status" : "Bahaya",
                 "Jam" : jam
@@ -198,8 +211,11 @@ while True:
                 time.sleep(0.5)
                 netral()
                 time.sleep(0.5)
+                custom()
+                time.sleep(1)
             else:
                 print("Tombol Telah Ditekan")
+                pressed()
                 break
     else:
         print("Status Aman")

@@ -1,6 +1,8 @@
 import RPi.GPIO as GPIO
 import time, telepot, os, json, getpass, re, math, random, pandas
 from telepot.namedtuple import ReplyKeyboardMarkup
+import mysql.connector
+from aquautils import full, thn, bln, jam, tgl, nama
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
@@ -34,16 +36,74 @@ def hijau():
     GPIO.output(5,False)
     GPIO.output(7,True)
 
-tgl = time.strftime("%d %b", time.localtime())
-bln = time.strftime("%b %Y", time.localtime())
-thn = time.strftime("%Y", time.localtime())
-jam = time.strftime("%H:%M:%S", time.localtime())
-full = time.strftime("%Y/%m/%d", time.localtime())
-nama = getpass.getuser()
-saat = str()
+setup = open("setup.json")
+json_setup = json.loads(setup.read())
+
 s1 = int()
 s2 = int()
 
+def create_db():
+    db = mysql.connector.connect(
+    host=json_setup["localhost"],
+    user=json_setup["user"],
+    passwd=json_setup["passwd"]
+    )
+
+    if db.is_connected():
+        print("Koneksi Ke DataBase Berhasil !!!")
+        print("Membuat DataBase Baru")
+        time.sleep(2)
+    cursor = db.cursor()
+    cursor.execute("CREATE DATABASE TheBox")
+    print("Database TheBox berhasil dibuat")
+
+create_db()
+
+db = mysql.connector.connect(
+    host=json_setup["localhost"],
+    user=json_setup["user"],
+    passwd=json_setup["passwd"],
+    database=json_setup["database"]
+)
+
+def tabel_db(db):
+    cursor = db.cursor()
+    sql = """CREATE TABLE BoxDump (
+        tanggal VARCHAR(255),
+        status VARCHAR(255),
+        jam VARCHAR(255)
+    )
+    """
+    cursor.execute(sql)
+    print("Tabel BoxDump Telah Berhasil Dibuat")
+
+tabel_db(db)
+
+def insert_db(db, status):
+    cursor = db.cursor()
+    sql = "INSERT INTO BoxDump (tanggal, status, jam) VALUES (%s, %s, %s)"
+    val = (full, status, jam)
+    cursor.execute(sql, val)
+    db.commit()
+    print("Status {} Pukul {} Telah Berhasil Ditambahkan".format(status, jam))
+
+def show_db(db):
+    cursor = db.cursor()
+    sql = "SELECT * FROM BoxDump"
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    for data in result:
+        convert = pandas.DataFrame(data)
+        print(convert)
+
+def show_last_db(db):
+    cursor = db.cursor()
+    sql = "SELECT * FROM BoxDump"
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    for data in result:
+        convert = pandas.DataFrame(data)
+        print(convert.tail(1))
 
 tmprpt = {
     "{}".format(full) : [
@@ -69,34 +129,35 @@ def cek():
                 with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln), "w") as outfile:
                     outfile.write(json_object)
 
+cek()
+
 json_object = json.dumps(tmprpt, indent = 4)
 
 def write_json(data, filename=("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln))):
     with open(filename, 'w') as jswrt:
         json.dump(data, jswrt, indent = 4)
 
-aquaBot = telepot.Bot("1480116644:AAHAWxJ0nv7AhcOr6O_OjFpNedly3lqDxd4")
+aquaBot = telepot.Bot(json_setup["token"])
 telecheck = aquaBot.getMe()
-
-cek()
 
 file_json = open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln))
 data = json.loads(file_json.read())
 
 def greet():
     if (re.compile(r"0\d\:\d\d").search(jam)):
-        saat = "Pagi"
+        return("Pagi")
     elif (re.compile(r"1[01234]\:\d\d").search(jam)):
-        saat = "Siang"
+        return("Siang")
     elif (re.compile(r"1[5678]\:\d\d").search(jam)):
-        saat = "Sore"
+        return("Sore")
     else:
-        saat = "Malam"
+        return("Malam")
 
 def tlgrm(msg):
     chat_id = msg["chat"]["id"]
     chat_type = msg["chat"]["type"]
     command = msg["text"]
+    username = msg["from"]["username"]
     
     print("Perintah diterima : {}".format(command))
 
@@ -107,10 +168,12 @@ def tlgrm(msg):
         aquaBot.sendMessage(chat_id, pesan, "HTML", reply_markup=keyboard)
 
     elif (re.compile(r"/last").search(command)):
-        aquaBot.sendMessage(chat_id, f"<b>Status Terakhir {'{}'.format(full)}</b> :\n\n{(convert.tail(1))}","HTML")
+        # aquaBot.sendMessage(chat_id, f"<b>Status Terakhir {'{}'.format(full)}</b> :\n\n{(convert.tail(1))}","HTML")
+        aquaBot.sendMessage(chat_id, f"<b>Status Terakhir {'{}'.format(full)}</b> :\n\n{(show_last_db(db)['convert'])}","HTML")
 
     elif (re.compile(r"/full").search(command)):
-        aquaBot.sendMessage(chat_id, f"<b>Tanggal {'{}'.format(full)}</b> :\n\n{(convert)}","HTML")
+        # aquaBot.sendMessage(chat_id, f"<b>Tanggal {'{}'.format(full)}</b> :\n\n{(convert)}","HTML")
+        aquaBot.sendMessage(chat_id, f"<b>Tanggal {'{}'.format(full)}</b> :\n\n{(show_db(db)['convert'])}","HTML")
 
     elif (re.compile(r"/aqua").search(command)):
         pesan = [
@@ -128,11 +191,11 @@ def tlgrm(msg):
 
     elif (re.compile(r"/id").search(command)):
         if chat_type == "private":
-            aquaBot.sendMessage(chat_id, "Hai {}\nSelamat {}\nChat ID kamu adalah : <code>{}</code>".format(msg["chat"]["first_name"], saat, chat_id),"HTML")
+            aquaBot.sendMessage(chat_id, "Hai {}\nSelamat {}\nChat ID kamu adalah : <code>{}</code>".format(username, greet(), chat_id),"HTML")
         elif chat_type == "supergroup":
-            aquaBot.sendMessage(chat_id, "Hai {}\nSelamat {}\nChat ID kamu adalah : <code>{}</code>\nChat ID grup ini adalah : <code>{}</code>".format(msg["from"]["first_name"], saat, msg["from"]["id"],chat_id),"HTML")
+            aquaBot.sendMessage(chat_id, "Hai {}\nSelamat {}\nChat ID kamu adalah : <code>{}</code>\nChat ID grup ini adalah : <code>{}</code>".format(username, greet(), msg["from"]["id"],chat_id),"HTML")
         else :
-            aquaBot.sendMessage(chat_id, "Hai\nSelamat {}\nChat ID {} ini adalah : <code>{}</code>".format(saat, chat_type, chat_id),"HTML")
+            aquaBot.sendMessage(chat_id, "Hai {}\nSelamat {}\nChat ID {} ini adalah : <code>{}</code>".format(username, greet(), chat_type, chat_id),"HTML")
 
 def notif(status,jam):
     aquaBot.sendMessage(-1001419749036,"Status {} Pada Pukul {}".format(status,jam))
@@ -157,16 +220,13 @@ aquaBot.message_loop(tlgrm)
 print(telecheck)
 print("Masukkan Perintah : ")
 
-while True:
-    greet()
-    cek()
-    netral()
-    convert = pandas.DataFrame(data['{}'.format(full)])
+def main(data, s1, s2):
     if (GPIO.input(8) == False):
         s1 += 1
         if s1 >= 20:
             s1 = 0
             notif("Siaga I",jam)
+            insert_db(db, "Siaga I")
             with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln)) as json_file:
                 data = json.load(json_file)
                 wrjsn = data["{}".format(full)]        
@@ -183,6 +243,7 @@ while True:
         if s2 >= 10:
             s2 = 0
             notif("Siaga II",jam)
+            insert_db(db, "Siaga II")
             with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln)) as json_file:
                 data = json.load(json_file)
                 wrjsn = data["{}".format(full)]        
@@ -196,6 +257,7 @@ while True:
             print(("Status Siaga II Telah Terekam Sebanyak {} Kali").format(s2))
     elif (GPIO.input(12) == False):
         notif("Bahaya",jam)
+        insert_db(db, "Bahaya")
         with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln)) as json_file:
             data = json.load(json_file)
             wrjsn = data["{}".format(full)]        
@@ -220,8 +282,15 @@ while True:
     else:
         print("Status Aman")
     
-    time.sleep(0.5)
-
-    if jam == "00:00":
-        s1 = 0
-        s2 = 0
+if __name__ == "__main__":
+    while True:
+        import aquautils
+        greet()
+        cek()
+        netral()
+        convert = pandas.DataFrame(data['{}'.format(full)])
+        main(data, s1, s2)
+        if (re.compile(r"00:0[12]").search(jam)):
+            s1 = int(0)
+            s2 = int(0)
+        time.sleep(1)

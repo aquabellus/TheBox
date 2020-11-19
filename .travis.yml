@@ -10,4 +10,4 @@ python:
   - "3.9"
 
 script:
-  - aquabox
+  - aquastart

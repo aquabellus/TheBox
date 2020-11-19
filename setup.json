@@ -4,5 +4,5 @@
     "passwd" : "PASSWORD MARIADB",
     "database" : "DATABASE NAME MARIADB",
     "token" : "TOKEN TELEGRAMBOT",
-    "chatid" : "-1001419749036"
+    "chatid" : "GROUP/PRIVATE CHAT ID"
 }

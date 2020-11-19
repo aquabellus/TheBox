@@ -131,7 +131,7 @@ def tlgrm(msg):
             aquaBot.sendMessage(chat_id, "Hai {}\nSelamat {}\nChat ID {} ini adalah : <code>{}</code>".format(username, greet(), chat_type, chat_id),"HTML")
 
 def notif(status,jam):
-    aquaBot.sendMessage(json.loads(open("setup.json").read())['chatid'],"Status {} Pada Pukul {}".format(status,jam))
+    aquaBot.sendMessage(json_setup['chatid'], "Status {} Pada Pukul {}".format(status,jam))
 
 def pressed():
     pesan = [
@@ -139,7 +139,7 @@ def pressed():
         "Notifikasi telah dimatikan kakak",
         "Terimakasih atas bantuannya XD"
     ]
-    aquaBot.sendMessage(json.loads(open("setup.json").read())['chatid'], pesan[random.randrange(len(pesan))], "HTML")
+    aquaBot.sendMessage(json_setup['chatid'], pesan[random.randrange(len(pesan))], "HTML")
 
 def alert():
     pesan = [
@@ -147,7 +147,7 @@ def alert():
         "Wi Wu Wi Wu Wi Wuuuuuu",
         "Sudah terdeteksi bahayaaa\nAyo cek dan di tekan tombolnya"
     ]
-    aquaBot.sendMessage(json.loads(open("setup.json").read())['chatid'], pesan[random.randrange(len(pesan))], "HTML")
+    aquaBot.sendMessage(json_setup['chatid'], pesan[random.randrange(len(pesan))], "HTML")
 
 aquaBot.message_loop(tlgrm)
 print(telecheck)

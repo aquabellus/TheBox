@@ -1,5 +1,6 @@
 import RPi.GPIO as GPIO
-import time, telepot, os, json, getpass, re, math, random, pandas
+import time, telepot, telepot.api, os, json, getpass, re, math, random, pandas, urllib3
+from telepot.exception import TelegramError
 from telepot.namedtuple import ReplyKeyboardMarkup
 from aquasetup import json_setup, insert_db
 
@@ -71,7 +72,7 @@ def write_json(data, filename=("/home/{}/Documents/BoxDump.d/{}/{}.json".format(
         json.dump(data, jswrt, indent = 4)
 
 aquaBot = telepot.Bot(json_setup["token"])
-telecheck = aquaBot.getMe()
+telecheck = aquaBot.getMe()["username"]
 
 file_json = open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(getpass.getuser(), time.strftime("%Y", time.localtime()), time.strftime("%b %Y", time.localtime())))
 data = json.loads(file_json.read())
@@ -130,6 +131,9 @@ def tlgrm(msg):
         else :
             aquaBot.sendMessage(chat_id, "Hai {}\nSelamat {}\nChat ID {} ini adalah : <code>{}</code>".format(username, greet(), chat_type, chat_id),"HTML")
 
+def new(req, **user_kw):
+    return None
+
 def notif(status,jam):
     aquaBot.sendMessage(json_setup['chatid'], "Status {} Pada Pukul {}".format(status,jam))
 
@@ -149,14 +153,17 @@ def alert():
     ]
     aquaBot.sendMessage(json_setup['chatid'], pesan[random.randrange(len(pesan))], "HTML")
 
-aquaBot.message_loop(tlgrm)
-print(telecheck)
+aquaBot.message_loop({'chat': tlgrm})
+print("{} Started !!!".format(telecheck))
 print("Masukkan Perintah : ")
 
 s1 = int()
 s2 = int()
 
 if __name__ == "__main__":
+    telepot.api._pools = {
+        "default": urllib3.PoolManager(num_pools=3, maxsize=10, retries=6, timeout=30)}
+    telepot.api._which_pool = new
     while True:
         bln = time.strftime("%b %Y", time.localtime())
         thn = time.strftime("%Y", time.localtime())

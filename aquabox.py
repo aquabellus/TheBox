@@ -39,45 +39,12 @@ def hijau():
 setup = open("setup.json")
 json_setup = json.loads(setup.read())
 
-s1 = int()
-s2 = int()
-
-def create_db():
-    db = mysql.connector.connect(
-    host=json_setup["localhost"],
-    user=json_setup["user"],
-    passwd=json_setup["passwd"]
-    )
-
-    if db.is_connected():
-        print("Koneksi Ke DataBase Berhasil !!!")
-        print("Membuat DataBase Baru")
-        time.sleep(2)
-    cursor = db.cursor()
-    cursor.execute("CREATE DATABASE TheBox")
-    print("Database TheBox berhasil dibuat")
-
-create_db()
-
 db = mysql.connector.connect(
-    host=json_setup["localhost"],
+    host=json_setup["host"],
     user=json_setup["user"],
     passwd=json_setup["passwd"],
     database=json_setup["database"]
 )
-
-def tabel_db(db):
-    cursor = db.cursor()
-    sql = """CREATE TABLE BoxDump (
-        tanggal VARCHAR(255),
-        status VARCHAR(255),
-        jam VARCHAR(255)
-    )
-    """
-    cursor.execute(sql)
-    print("Tabel BoxDump Telah Berhasil Dibuat")
-
-tabel_db(db)
 
 def insert_db(db, status):
     cursor = db.cursor()
@@ -87,24 +54,6 @@ def insert_db(db, status):
     db.commit()
     print("Status {} Pukul {} Telah Berhasil Ditambahkan".format(status, jam))
 
-def show_db(db):
-    cursor = db.cursor()
-    sql = "SELECT * FROM BoxDump"
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    for data in result:
-        convert = pandas.DataFrame(data)
-        print(convert)
-
-def show_last_db(db):
-    cursor = db.cursor()
-    sql = "SELECT * FROM BoxDump"
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    for data in result:
-        convert = pandas.DataFrame(data)
-        print(convert.tail(1))
-
 tmprpt = {
     "{}".format(full) : [
         {
@@ -113,6 +62,8 @@ tmprpt = {
         }
     ]
 }
+
+json_object = json.dumps(tmprpt, indent = 4)
 
 def cek():
     if os.path.exists("/home/{}/Documents/BoxDump.d".format(nama)) == False:
@@ -130,8 +81,6 @@ def cek():
                     outfile.write(json_object)
 
 cek()
-
-json_object = json.dumps(tmprpt, indent = 4)
 
 def write_json(data, filename=("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln))):
     with open(filename, 'w') as jswrt:
@@ -168,12 +117,10 @@ def tlgrm(msg):
         aquaBot.sendMessage(chat_id, pesan, "HTML", reply_markup=keyboard)
 
     elif (re.compile(r"/last").search(command)):
-        # aquaBot.sendMessage(chat_id, f"<b>Status Terakhir {'{}'.format(full)}</b> :\n\n{(convert.tail(1))}","HTML")
-        aquaBot.sendMessage(chat_id, f"<b>Status Terakhir {'{}'.format(full)}</b> :\n\n{(show_last_db(db)['convert'])}","HTML")
+        aquaBot.sendMessage(chat_id, f"<b>Status Terakhir {'{}'.format(full)}</b> :\n\n{(convert.tail(1))}","HTML")
 
     elif (re.compile(r"/full").search(command)):
-        # aquaBot.sendMessage(chat_id, f"<b>Tanggal {'{}'.format(full)}</b> :\n\n{(convert)}","HTML")
-        aquaBot.sendMessage(chat_id, f"<b>Tanggal {'{}'.format(full)}</b> :\n\n{(show_db(db)['convert'])}","HTML")
+        aquaBot.sendMessage(chat_id, f"<b>Tanggal {'{}'.format(full)}</b> :\n\n{(convert)}","HTML")
 
     elif (re.compile(r"/aqua").search(command)):
         pesan = [
@@ -220,77 +167,75 @@ aquaBot.message_loop(tlgrm)
 print(telecheck)
 print("Masukkan Perintah : ")
 
-def main(data, s1, s2):
-    if (GPIO.input(8) == False):
-        s1 += 1
-        if s1 >= 20:
-            s1 = 0
-            notif("Siaga I",jam)
-            insert_db(db, "Siaga I")
-            with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln)) as json_file:
-                data = json.load(json_file)
-                wrjsn = data["{}".format(full)]        
-                s1rpt = {
-                    "Status" : "Siaga I",
-                    "Jam" : jam
-                }
-                wrjsn.append(s1rpt)
-            write_json(data)
-        else:
-            print(("Status Siaga I Telah Terekam Sebanyak {} Kali").format(s1))
-    elif (GPIO.input(10) == False):
-        s2 += 1
-        if s2 >= 10:
-            s2 = 0
-            notif("Siaga II",jam)
-            insert_db(db, "Siaga II")
-            with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln)) as json_file:
-                data = json.load(json_file)
-                wrjsn = data["{}".format(full)]        
-                s2rpt = {
-                    "Status" : "Siaga II",
-                    "Jam" : jam
-                }
-                wrjsn.append(s2rpt)
-            write_json(data)
-        else:
-            print(("Status Siaga II Telah Terekam Sebanyak {} Kali").format(s2))
-    elif (GPIO.input(12) == False):
-        notif("Bahaya",jam)
-        insert_db(db, "Bahaya")
-        with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln)) as json_file:
-            data = json.load(json_file)
-            wrjsn = data["{}".format(full)]        
-            bhya = {
-                "Status" : "Bahaya",
-                "Jam" : jam
-            }
-            wrjsn.append(bhya)
-        write_json(data)
-        while True:
-            if (GPIO.input(16) == False):
-                merah()
-                time.sleep(0.5)
-                netral()
-                time.sleep(0.5)
-                custom()
-                time.sleep(1)
-            else:
-                print("Tombol Telah Ditekan")
-                pressed()
-                break
-    else:
-        print("Status Aman")
-    
+s1 = int()
+s2 = int()
+
 if __name__ == "__main__":
     while True:
-        import aquautils
         greet()
         cek()
         netral()
+        import aquautils
+        if (GPIO.input(8) == False):
+            s1 += 1
+            if s1 >= 20:
+                s1 = 0
+                notif("Siaga I",jam)
+                insert_db(db, "Siaga I")
+                with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln)) as json_file:
+                    data = json.load(json_file)
+                    wrjsn = data["{}".format(full)]        
+                    s1rpt = {
+                        "Status" : "Siaga I",
+                        "Jam" : jam
+                    }
+                    wrjsn.append(s1rpt)
+                write_json(data)
+            else:
+                print(("Status Siaga I Telah Terekam Sebanyak {} Kali").format(s1))
+        elif (GPIO.input(10) == False):
+            s2 += 1
+            if s2 >= 10:
+                s2 = 0
+                notif("Siaga II",jam)
+                insert_db(db, "Siaga II")
+                with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln)) as json_file:
+                    data = json.load(json_file)
+                    wrjsn = data["{}".format(full)]        
+                    s2rpt = {
+                        "Status" : "Siaga II",
+                        "Jam" : jam
+                    }
+                    wrjsn.append(s2rpt)
+                write_json(data)
+            else:
+                print(("Status Siaga II Telah Terekam Sebanyak {} Kali").format(s2))
+        elif (GPIO.input(12) == False):
+            notif("Bahaya",jam)
+            insert_db(db, "Bahaya")
+            with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln)) as json_file:
+                data = json.load(json_file)
+                wrjsn = data["{}".format(full)]        
+                bhya = {
+                    "Status" : "Bahaya",
+                    "Jam" : jam
+                }
+                wrjsn.append(bhya)
+            write_json(data)
+            while True:
+                if (GPIO.input(16) == False):
+                    merah()
+                    time.sleep(0.5)
+                    netral()
+                    time.sleep(0.5)
+                    custom()
+                    time.sleep(1)
+                else:
+                    print("Tombol Telah Ditekan")
+                    pressed()
+                    break
+        else:
+            print("Status Aman")
+
         convert = pandas.DataFrame(data['{}'.format(full)])
-        main(data, s1, s2)
-        if (re.compile(r"00:0[12]").search(jam)):
-            s1 = int(0)
-            s2 = int(0)
         time.sleep(1)

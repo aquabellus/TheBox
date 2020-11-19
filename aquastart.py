@@ -1,5 +1,5 @@
 import RPi.GPIO as GPIO
-import time, telepot, os, json, getpass, re, math, random, pandas, mysql.connector
+import time, telepot, os, json, getpass, re, math, random, pandas
 from telepot.namedtuple import ReplyKeyboardMarkup
 from aquasetup import json_setup, insert_db
 

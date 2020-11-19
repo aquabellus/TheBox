@@ -1,0 +1,7 @@
+{
+    "host" : "HOST/IP MARIADB",
+    "user" : "USER MARIADB",
+    "passwd" : "PASSWORD MARIADB",
+    "database" : "DATABASE NAME MARIADB",
+    "token" : "TOKEN TELEGRAMBOT"
+}

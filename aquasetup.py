@@ -1,5 +1,6 @@
 import mysql.connector, json, time
-from aquabox import json_setup, db
+
+json_setup = json.loads(open("setup.json").read())
 
 def create_db():
     db = mysql.connector.connect(
@@ -16,17 +17,40 @@ def create_db():
     cursor.execute("CREATE DATABASE TheBox")
     print("Database TheBox berhasil dibuat")
 
-def tabel_db(db):
+def tabel_db():
+    db = mysql.connector.connect(
+    host=json_setup["host"],
+    user=json_setup["user"],
+    passwd=json_setup["passwd"],
+    database=json_setup["database"]
+    )
     cursor = db.cursor()
     sql = """CREATE TABLE BoxDump (
-        tanggal VARCHAR(255),
-        status VARCHAR(255),
-        jam VARCHAR(255)
+        tanggal DATE(),
+        status CHAR(9),
+        jam TIME()
     )
     """
     cursor.execute(sql)
     print("Tabel BoxDump Telah Berhasil Dibuat")
 
-create_db()
-tabel_db(db)
+def insert_db(status):
+    jam = time.strftime("%H:%M:%S", time.localtime())
+    full = time.strftime("%Y/%m/%d", time.localtime())
+    db = mysql.connector.connect(
+    host=json_setup["host"],
+    user=json_setup["user"],
+    passwd=json_setup["passwd"]
+    )
+    cursor = db.cursor()
+    sql = "INSERT INTO BoxDump (tanggal, status, jam) VALUES (%s, %s, %s)"
+    val = (full, status, jam)
+    cursor.execute(sql, val)
+    db.commit()
+    print("Status {} Pukul {} Telah Berhasil Ditambahkan".format(status, jam))
+
+if __name__ == "__main__":
+    create_db()
+    tabel_db()
+    print("Jalankan aquastart.py untuk memulai monitoring")
 

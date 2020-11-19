@@ -3,5 +3,6 @@
     "user" : "USER MARIADB",
     "passwd" : "PASSWORD MARIADB",
     "database" : "DATABASE NAME MARIADB",
-    "token" : "TOKEN TELEGRAMBOT"
+    "token" : "TOKEN TELEGRAMBOT",
+    "chatid" : "-1001419749036"
 }

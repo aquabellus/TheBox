@@ -1,8 +1,8 @@
 import RPi.GPIO as GPIO
-import time, telepot, telepot.api, os, json, getpass, re, math, random, pandas, urllib3
-from telepot.exception import TelegramError
-from telepot.namedtuple import ReplyKeyboardMarkup
+import datetime, os, json, getpass, re, math, random, pandas, logging
+from aquabot import notif, alert, pressed
 from aquasetup import json_setup, insert_db
+from time import sleep
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
@@ -10,12 +10,11 @@ GPIO.setmode(GPIO.BOARD)
 GPIO.setup(3,GPIO.OUT)  #LED Merah
 GPIO.setup(5,GPIO.OUT)  #LED Hijau
 GPIO.setup(7,GPIO.OUT)  #LED Biru
-#GPIO.setup(11,GPIO.OUT) #LED VCC
 GPIO.setup(8,GPIO.IN)   #Sensor Siaga I
 GPIO.setup(10,GPIO.IN)  #Sensor Siaga II
 GPIO.setup(12,GPIO.IN)  #Sensor Bahaya
 GPIO.setup(16,GPIO.IN,pull_up_down=GPIO.PUD_DOWN) #Tombol
-#Pin 3.3V => Pin Button
+
 def netral():
     GPIO.output(3,True)
     GPIO.output(5,True)
@@ -37,202 +36,158 @@ def hijau():
     GPIO.output(7,True)
 
 tmprpt = {
-    "{}".format(time.strftime("%Y/%m/%d", time.localtime())) : [
+    "{}".format(datetime.datetime.now().strftime("%Y/%m/%d")) : [
         {
             "Status" : "Mulai",
-            "Jam" : time.strftime("%H:%M:%S", time.localtime())
+            "Jam" : datetime.datetime.now().strftime("%H:%M:%S")
         }
     ]
 }
 
 json_object = json.dumps(tmprpt, indent = 4)
+nama = getpass.getuser()
+path = os.path.dirname(os.path.realpath(__file__))
+pid = str(os.getpid())
+pidfile = "{}/helper/aquastart.pid".format(path)
 
 def cek():
-    nama = getpass.getuser()
-    bln = time.strftime("%b %Y", time.localtime())
-    thn = time.strftime("%Y", time.localtime())
+    thn = datetime.datetime.now().strftime("%Y-%m")
+    tgl = datetime.datetime.now().strftime("%d")
     if os.path.exists("/home/{}/Documents/BoxDump.d".format(nama)) == False:
         os.makedirs("/home/{}/Documents/BoxDump.d/{}".format(nama,thn))
-        with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln), "w") as outfile:
+        with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,tgl), "w") as outfile:
             outfile.write(json_object)
     else:
         if os.path.exists("/home/{}/Documents/BoxDump.d/{}".format(nama,thn)) == False:
             os.makedirs("/home/{}/Documents/BoxDump.d/{}".format(nama,thn))
-            with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln), "w") as outfile:
+            with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,tgl), "w") as outfile:
                 outfile.write(json_object)
         else:
-            if os.path.exists("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln)) == False:
-                with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln), "w") as outfile:
+            if os.path.exists("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,tgl)) == False:
+                with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,tgl), "w") as outfile:
                     outfile.write(json_object)
 
 cek()
 
-def write_json(data, filename=("/home/{}/Documents/BoxDump.d/{}/{}.json".format(getpass.getuser(), time.strftime("%Y", time.localtime()), time.strftime("%b %Y", time.localtime())))):
+def write_json(data, filename=("/home/{}/Documents/BoxDump.d/{}/{}.json".format(getpass.getuser(), datetime.datetime.now().strftime("%Y-%m"), datetime.datetime.now().strftime("%d")))):
     with open(filename, 'w') as jswrt:
         json.dump(data, jswrt, indent = 4)
 
-aquaBot = telepot.Bot(json_setup["token"])
-telecheck = aquaBot.getMe()["username"]
+def status():
+    status = str()
+    if (GPIO.input(8) == False):
+        status = str("Siaga I")
+        if (GPIO.input(10) == False):
+            status = str("Siaga I/II")
+    elif (GPIO.input(10) == False):
+        status = str("Siaga II")
+        if (GPIO.input(12) == False):
+            status = str("Siaga II/Bahaya")
+    elif (GPIO.input(12) == False):
+        status = str("Bahaya")
+    return(status)
 
-file_json = open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(getpass.getuser(), time.strftime("%Y", time.localtime()), time.strftime("%b %Y", time.localtime())))
-data = json.loads(file_json.read())
-
-def greet():
-    jam = time.strftime("%H:%M:%S", time.localtime())
-    if (re.compile(r"0\d\:\d\d").search(jam)):
-        return("Pagi")
-    elif (re.compile(r"1[01234]\:\d\d").search(jam)):
-        return("Siang")
-    elif (re.compile(r"1[5678]\:\d\d").search(jam)):
-        return("Sore")
-    else:
-        return("Malam")
-
-def tlgrm(msg):
-    full = time.strftime("%Y/%m/%d", time.localtime())
-    chat_id = msg["chat"]["id"]
-    chat_type = msg["chat"]["type"]
-    command = msg["text"]
-    username = msg["from"]["username"]
-    
-    print("Perintah diterima : {}".format(command))
-
-    if (re.compile(r"/start").search(command)):
-        keyboard = ReplyKeyboardMarkup(keyboard=[["/aqua"]],resize_keyboard=True, one_time_keyboard=True)
-        pesan = "Halo, namaku Aqua\nAku adalah bot yang akan membantumu untuk mengontrol alat-alat yang dibuat oleh aquabellus."
-        pesan += "\nKalo ingin memanggilku, pencet tombol yang disediakan yaa"
-        aquaBot.sendMessage(chat_id, pesan, "HTML", reply_markup=keyboard)
-
-    elif (re.compile(r"/last").search(command)):
-        aquaBot.sendMessage(chat_id, f"<b>Status Terakhir {'{}'.format(full)}</b> :\n\n{(convert.tail(1))}","HTML")
-
-    elif (re.compile(r"/full").search(command)):
-        aquaBot.sendMessage(chat_id, f"<b>Tanggal {'{}'.format(full)}</b> :\n\n{(convert)}","HTML")
-
-    elif (re.compile(r"/aqua").search(command)):
-        pesan = [
-            "Dalem ?",
-            "Kenapa ?",
-            "Hadir"
-        ]
-        aquaBot.sendMessage(chat_id, "{}".format(pesan[random.randrange(len(pesan))]))
-
-    elif (re.compile(r"/about").search(command)):
-        pesan = "Aqua adalah bot yang dibuat untuk membantu pengguna dalam menggunakan produk-produk aquabellus\n"
-        pesan += "Untuk keterangan lebih lanjut, silahkan menuju ke tautan berikut.\n"
-        pesan += "<a href='https://github.com/aquabellus'>Github</a>"
-        aquaBot.sendMessage(chat_id, pesan, "HTML")
-
-    elif (re.compile(r"/id").search(command)):
-        if chat_type == "private":
-            aquaBot.sendMessage(chat_id, "Hai {}\nSelamat {}\nChat ID kamu adalah : <code>{}</code>".format(username, greet(), chat_id),"HTML")
-        elif chat_type == "supergroup":
-            aquaBot.sendMessage(chat_id, "Hai {}\nSelamat {}\nChat ID kamu adalah : <code>{}</code>\nChat ID grup ini adalah : <code>{}</code>".format(username, greet(), msg["from"]["id"],chat_id),"HTML")
-        else :
-            aquaBot.sendMessage(chat_id, "Hai {}\nSelamat {}\nChat ID {} ini adalah : <code>{}</code>".format(username, greet(), chat_type, chat_id),"HTML")
-
-def new(req, **user_kw):
-    return None
-
-def notif(status,jam):
-    aquaBot.sendMessage(json_setup['chatid'], "Status {} Pada Pukul {}".format(status,jam))
-
-def pressed():
-    pesan = [
-        "Tombol sudah ditekaaaan terimakasih",
-        "Notifikasi telah dimatikan kakak",
-        "Terimakasih atas bantuannya XD"
-    ]
-    aquaBot.sendMessage(json_setup['chatid'], pesan[random.randrange(len(pesan))], "HTML")
-
-def alert():
-    pesan = [
-        "Bahaya bahayaaaa Aqua mendeteksi kemungkinan banjir",
-        "Wi Wu Wi Wu Wi Wuuuuuu",
-        "Sudah terdeteksi bahayaaa\nAyo cek dan di tekan tombolnya"
-    ]
-    aquaBot.sendMessage(json_setup['chatid'], pesan[random.randrange(len(pesan))], "HTML")
-
-aquaBot.message_loop({'chat': tlgrm})
-print("{} Started !!!".format(telecheck))
-print("Masukkan Perintah : ")
-
-s1 = int()
-s2 = int()
-
-if __name__ == "__main__":
-    telepot.api._pools = {
-        "default": urllib3.PoolManager(num_pools=3, maxsize=10, retries=6, timeout=30)}
-    telepot.api._which_pool = new
-    while True:
-        bln = time.strftime("%b %Y", time.localtime())
-        thn = time.strftime("%Y", time.localtime())
-        jam = time.strftime("%H:%M:%S", time.localtime())
-        full = time.strftime("%Y/%m/%d", time.localtime())
-        nama = getpass.getuser()
-        greet()
-        cek()
-        netral()
-        if (GPIO.input(8) == False):
-            s1 += 1
-            if s1 >= 20:
-                s1 = 0
-                notif("Siaga I",jam)
-                insert_db("Siaga I")
-                with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln)) as json_file:
-                    data = json.load(json_file)
-                    wrjsn = data["{}".format(full)]        
-                    s1rpt = {
-                        "Status" : "Siaga I",
-                        "Jam" : jam
-                    }
-                    wrjsn.append(s1rpt)
+def siagaI(s1, s2_2):
+    if (GPIO.input(8) == False):
+        if (GPIO.input(10) == False):
+            s2_2 += 1
+            if s2_2 >= 20:
+                notif(status())
+                insert_db(status())
+                with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
+                    data = json.load(json_file)["{}".format(full)].append(report)
                 write_json(data)
-            else:
-                print(("Status Siaga I Telah Terekam Sebanyak {} Kali").format(s1))
-        elif (GPIO.input(10) == False):
-            s2 += 1
-            if s2 >= 10:
-                s2 = 0
-                notif("Siaga II",jam)
-                insert_db("Siaga II")
-                with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln)) as json_file:
-                    data = json.load(json_file)
-                    wrjsn = data["{}".format(full)]        
-                    s2rpt = {
-                        "Status" : "Siaga II",
-                        "Jam" : jam
-                    }
-                    wrjsn.append(s2rpt)
-                write_json(data)
-            else:
-                print(("Status Siaga II Telah Terekam Sebanyak {} Kali").format(s2))
-        elif (GPIO.input(12) == False):
-            notif("Bahaya",jam)
-            insert_db("Bahaya")
-            with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,bln)) as json_file:
-                data = json.load(json_file)
-                wrjsn = data["{}".format(full)]        
-                bhya = {
-                    "Status" : "Bahaya",
-                    "Jam" : jam
-                }
-                wrjsn.append(bhya)
+                s2_2 = 0
+        s1 += 1
+        if s1 >= 20:
+            notif(status())
+            insert_db(status())
+            with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,tgl)) as json_file:
+                data = json.load(json_file)["{}".format(full)].append(report)
             write_json(data)
+            s1 = 0
+
+def siagaII(s2, s3):
+    if (GPIO.input(10) == False):
+        if (GPIO.input(12) == False):
+            s3 += 1
+            if s3 >= 10:
+                notif(status())
+                insert_db(status())
+                with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,tgl)) as json_file:
+                    data = json.load(json_file)["{}".format(full)].append(report)
+                write_json(data)
+                s3 = 0
+        s2 += 1
+        if s2 >= 10:
+            notif(status())
+            insert_db(status())
+            with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,tgl)) as json_file:
+                data = json.load(json_file)["{}".format(full)].append(report)
+            write_json(data)
+            s2 = 0
+
+def danger(s3):
+    if (GPIO.input(12) == False):
+        if (GPIO.input(10) == True):
+            notif(status())
+            insert_db(status())
+            with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,tgl)) as json_file:
+                data = json.load(json_file)["{}".format(full)].append(report)
+            write_json(data)
+            s3 = 0
             while True:
                 if (GPIO.input(16) == False):
                     merah()
-                    time.sleep(0.5)
+                    sleep(1)
                     netral()
-                    time.sleep(0.5)
+                    sleep(1)
                     alert()
-                    time.sleep(1)
+                    sleep(1)
                 else:
                     print("Tombol Telah Ditekan")
                     pressed()
                     break
-        else:
-            print("Status Aman")
 
-        convert = pandas.DataFrame(data['{}'.format(full)])
-        time.sleep(1)
+if os.path.exists("helper/") == False:
+    os.mkdir("helper/")
+if os.path.isfile(pidfile):
+    print("{} Sudah Tersedia, Menulis Ulang ...".format(pidfile))
+open(pidfile, 'w').write(pid)
+
+logging.basicConfig(filename='log/aquastart.log', filemode='w', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+
+if __name__ == "__main__":
+    s1 = int()
+    s2 = int()
+    s3 = int()
+    s2_2 = int()
+    while True:
+        thn = datetime.datetime.now().strftime("%Y-%m")
+        tgl = datetime.datetime.now().strftime("%d")
+        jam = datetime.datetime.now().strftime("%H:%M:%S")
+        full = datetime.datetime.now().strftime("%Y/%m/%d")
+        report = {
+            "Status" : status(),
+            "Jam" : jam
+        }   
+
+        if (re.compile(r"00\:00\:\d\d").search(jam)):
+            cek()
+        try:
+            netral()
+            danger(s3)
+            siagaII(s2, s3)
+            siagaI(s1, s2_2)
+        except(NameError, SystemError):
+            logging.error('This will get logged to a file')
+        except(SystemExit, KeyboardInterrupt):
+            logging.warning('This will get logged to a file')
+        finally:
+            print("Status Siaga I, II, dan Bahaya Secara Berurutan Telah Terekam Sebanyak {}/{}/{} Kali".format(s1, s2, s3))
+            if (re.compile(r"00:0[01]:\d\d").search(jam)):
+                s1 = 0
+                s2 = 0
+                s3 = 0
+                s2_2 = 0
+        sleep(1)

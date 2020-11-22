@@ -1,3 +1,4 @@
 pandas
-telepot
+python-telegram-bot
 mysql-connector-python
+psutil

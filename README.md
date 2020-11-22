@@ -18,6 +18,9 @@
 ## Documentation
 We Are Currently Writing [Documentation](https://aquabellus.gitbook.io/aqua-bellus/) Here.
 
+## Requirements
+Need python-devel to install requirements.
+
 ## Credits
 - [dickymuliafiqri](https://github.com/Dicky-MF) for write and maintenance this software.
 - [pudidi](https://github.com/pudidi) for write and maintenance this software.

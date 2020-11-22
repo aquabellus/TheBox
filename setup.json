@@ -1,8 +1,8 @@
 {
-    "host" : "HOST/IP MARIADB",
-    "user" : "USER MARIADB",
-    "passwd" : "PASSWORD MARIADB",
-    "database" : "DATABASE NAME MARIADB",
-    "token" : "TOKEN TELEGRAMBOT",
-    "chatid" : "GROUP/PRIVATE CHAT ID"
+    "host": "HOST / IP SERVER",
+    "user": "USER SERVER",
+    "passwd": "PASSWORD SERVER",
+    "database": "DATABASE NAME SERVER",
+    "token": "TOKEN TELEGRAMBOT",
+    "chatid": "CHAT ID"
 }

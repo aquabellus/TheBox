@@ -18,6 +18,25 @@
 ## Documentation
 We Are Currently Writing [Documentation](https://aquabellus.gitbook.io/aqua-bellus/) Here.
 
+## Files Scheme
+    PLEASE FOLLOW THIS SCHEME TO AVOID SOME ISSUE
+    
+    |--$HOME/Documents
+        |--BoxDump.d/...
+        |--The-Box
+            |--/../
+            |--log/
+            |--helper/
+            |--src/
+            |--aquabot.py
+            |--aquasetup.py
+            |--aquastart.py
+            |--setup.json
+            |--setup.sh
+            |--..
+            
+            *BoxDump.d will automatically generated when you run aquastart.py
+
 ## Requirements
 Need python-devel to install requirements.
 

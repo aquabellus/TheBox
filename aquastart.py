@@ -39,6 +39,7 @@ tmprpt = {
     "{}".format(datetime.datetime.now().strftime("%Y/%m/%d")) : [
         {
             "Status" : "Mulai",
+            "Tinggi" : "0M",
             "Jam" : datetime.datetime.now().strftime("%H:%M:%S")
         }
     ]
@@ -87,77 +88,19 @@ def status():
         status = str("Bahaya")
     return(status)
 
-def siagaI(s1, s2_2):
+def tinggi():
+    tinggi = str()
     if (GPIO.input(8) == False):
+        tinggi = str(json_setup["SI"])
         if (GPIO.input(10) == False):
-            s2_2 += 1
-            if s2_2 >= 20:
-                notif(status())
-                insert_db(status())
-                with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
-                    data = json.load(json_file)
-                    temp = data["{}".format(full)]
-                    temp.append(report)
-                write_json(data)
-                s2_2 = 0
-        s1 += 1
-        if s1 >= 20:
-            notif(status())
-            insert_db(status())
-            with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,tgl)) as json_file:
-                data = json.load(json_file)
-                temp = data["{}".format(full)]
-                temp.append(report)
-            write_json(data)
-            s1 = 0
-
-def siagaII(s2, s3):
-    if (GPIO.input(10) == False):
+            tinggi = str(json_setup["SI/II"])
+    elif (GPIO.input(10) == False):
+        tinggi = str(json_setup["SII"])
         if (GPIO.input(12) == False):
-            s3 += 1
-            if s3 >= 10:
-                notif(status())
-                insert_db(status())
-                with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,tgl)) as json_file:
-                    data = json.load(json_file)
-                    temp = data["{}".format(full)]
-                    temp.append(report)
-                write_json(data)
-                s3 = 0
-        s2 += 1
-        if s2 >= 10:
-            notif(status())
-            insert_db(status())
-            with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,tgl)) as json_file:
-                data = json.load(json_file)
-                temp = data["{}".format(full)]
-                temp.append(report)
-            write_json(data)
-            s2 = 0
-
-def danger(s3):
-    if (GPIO.input(12) == False):
-        if (GPIO.input(10) == True):
-            notif(status())
-            insert_db(status())
-            with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,tgl)) as json_file:
-                data = json.load(json_file)
-                temp = data["{}".format(full)]
-                temp.append(report)
-            write_json(data)
-            s3 = 0
-            while True:
-                if (GPIO.input(16) == False):
-                    merah()
-                    sleep(1)
-                    netral()
-                    sleep(1)
-                    alert()
-                    sleep(1)
-                else:
-                    print("Tombol Telah Ditekan")
-                    pressed()
-                    break
+            tinggi = str(json_setup["SII/B"])
+    elif (GPIO.input(12) == False):
+        tinggi = str(json_setup["B"])
+    return(tinggi)
 
 if os.path.exists("helper/") == False:
     os.mkdir("helper/")
@@ -165,13 +108,12 @@ if os.path.isfile(pidfile):
     print("{} Sudah Tersedia, Menulis Ulang ...".format(pidfile))
 open(pidfile, 'w').write(pid)
 
-logging.basicConfig(filename='log/aquastart.log', filemode='w', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+s1 = int()
+s2 = int()
+s3 = int()
 
 if __name__ == "__main__":
-    s1 = int()
-    s2 = int()
-    s3 = int()
-    s2_2 = int()
+    logging.basicConfig(filename='log/aquastart.log', filemode='w', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
     while True:
         thn = datetime.datetime.now().strftime("%Y-%m")
         tgl = datetime.datetime.now().strftime("%d")
@@ -179,25 +121,93 @@ if __name__ == "__main__":
         full = datetime.datetime.now().strftime("%Y/%m/%d")
         report = {
             "Status" : status(),
+            "Tinggi" : tinggi(),
             "Jam" : jam
         }   
 
-        if (re.compile(r"00\:00\:\d\d").search(jam)):
-            cek()
         try:
-            netral()
-            danger(s3)
-            siagaII(s2, s3)
-            siagaI(s1, s2_2)
+            if (re.compile(r"00\:00\:\d\d").search(jam)):
+                cek()
         except(NameError, SystemError):
             logging.error('This will get logged to a file')
         except(SystemExit, KeyboardInterrupt):
             logging.warning('This will get logged to a file')
         finally:
-            print("Status Siaga I, II, dan Bahaya Secara Berurutan Telah Terekam Sebanyak {}/{}/{} Kali".format(s1, s2, s3))
+            if (GPIO.input(8) == False):
+                if (GPIO.input(10) == False):
+                    s2 += 1
+                    if s2 == 10:
+                        notif(status())
+                        insert_db(status(), tinggi())
+                        with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
+                            data = json.load(json_file)
+                            temp = data["{}".format(full)]
+                            temp.append(report)
+                        write_json(data)
+                        s2 = 0
+                s1 += 1
+                if s1 == 20:
+                    notif(status())
+                    insert_db(status(), tinggi())
+                    with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
+                        data = json.load(json_file)
+                        temp = data["{}".format(full)]
+                        temp.append(report)
+                    write_json(data)
+                    s1 = 0
+            elif (GPIO.input(10) == False):
+                if (GPIO.input(12) == False):
+                    s3 += 1
+                    if s3 == 5:
+                        notif(status())
+                        insert_db(status(), tinggi())
+                        with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
+                            data = json.load(json_file)
+                            temp = data["{}".format(full)]
+                            temp.append(report)
+                        write_json(data)
+                        s3 = 0
+                s2 += 1
+                if s2 == 10:
+                    notif(status())
+                    insert_db(status(), tinggi())
+                    with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
+                        data = json.load(json_file)
+                        temp = data["{}".format(full)]
+                        temp.append(report)
+                    write_json(data)
+                    s2 = 0
+            elif (GPIO.input(12) == False):
+                if (GPIO.input(10) == True):
+                    notif(status())
+                    insert_db(status(), tinggi())
+                    with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
+                        data = json.load(json_file)
+                        temp = data["{}".format(full)]
+                        temp.append(report)
+                    write_json(data)
+                    s3 = 0
+                    while (GPIO.input(16) == False):
+                        netral()
+                        sleep(1)
+                        merah()
+                        sleep(1)
+                        alert()
+                        sleep(1)
+                        if (GPIO.input(16) == True):
+                            print("Tombol telah ditekan")
+                            pressed()
+                            break
+
+            print("Jumlah Deteksi Sensor")
+            print("")
+            print("Siaga I : {}x".format(s1))
+            print("Siaga II : {}x".format(s2))
+            print("Bahaya : {}x".format(s3))
+            print("")
+            print("")
             if (re.compile(r"00:0[01]:\d\d").search(jam)):
                 s1 = 0
                 s2 = 0
                 s3 = 0
-                s2_2 = 0
         sleep(1)

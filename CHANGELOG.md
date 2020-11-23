@@ -1,6 +1,7 @@
 # Alpha Build #
 
 ### 23/11/2020
+- Perbaikan beberapa bug
 
 ### 22/11/2020
 - Migrasi library dari "telepot" ke "python-telegram-bot"

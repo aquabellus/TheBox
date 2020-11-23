@@ -13,7 +13,6 @@ pidfile = "{}/helper/aquabot.pid".format(path)
 
 if os.path.exists("log/") == False:
     os.mkdir("log/")
-logging.basicConfig(filename='log/aquabot.log', filemode='w', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
 def greet():
     now = datetime.datetime.now()
@@ -42,7 +41,7 @@ def command(update = Update, context = CallbackContext) -> None:
     now = datetime.datetime.now()
     jam = now.strftime("%H:%M:%S")
     full = now.strftime("%Y/%m/%d")
-    file_json = open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(getpass.getuser(), str(now.year), str(now.strftime('%b %Y'))))
+    file_json = open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(getpass.getuser(), datetime.datetime.now().strftime("%Y-%m"), datetime.datetime.now().strftime("%d")))
     data = json.loads(file_json.read())
     convert = pandas.DataFrame(data["{}".format(full)])
     command = update.message.text
@@ -278,9 +277,9 @@ def button(update: Update , context: CallbackContext) -> None:
                 os.system("lxterminal -e python3 aquasetup.py")
                 sleep(1)
             finally:
-                query.edit_message_text("Script Berhasil Dijalan\nMohon Cek Log Untuk Detail Lebih Lanjut.")
+                query.edit_message_text("Script berhasil dijalankan\nMohon cek log untuk detail lebih lanjut.")
         else:
-            query.edit_message_text("File Tidak Ditemukan !!!")
+            query.edit_message_text("File tidak ditemukan !!!")
 
     elif query.data == "aquabot":
         if os.path.exists("log/aquabot.log"):
@@ -333,6 +332,7 @@ open(pidfile, 'w').write(pid)
 
 
 if __name__ == "__main__":
+    logging.basicConfig(filename='log/aquabot.log', filemode='w', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
     try:
         updater.start_polling()
     except(NameError, SystemError):

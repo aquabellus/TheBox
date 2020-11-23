@@ -5,11 +5,10 @@ json_setup = json.loads(open("setup.json").read())
 
 if os.path.exists("log/") == False:
     os.mkdir("log/")
-logging.basicConfig(filename='log/aquasetup.log', filemode='w', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
-def insert_db(status):
+def insert_db(status, tinggi):
     jam = datetime.datetime.now().strftime("%H:%M:%S")
-    thn = datetime.datetime.now().strftime("%Y/%m/%d")
+    tgl = datetime.datetime.now().strftime("%Y/%m/%d")
     db = mysql.connector.connect(
     host=json_setup["host"],
     user=json_setup["user"],
@@ -18,8 +17,8 @@ def insert_db(status):
     )
 
     cursor = db.cursor()
-    sql = "INSERT INTO BoxDump (tanggal, status, jam) VALUES (%s, %s, %s)"
-    val = (thn, status, jam)
+    sql = "INSERT INTO BoxDump (tanggal, status, tinggi, jam) VALUES (%s, %s, %s, %s)"
+    val = (tgl, status, tinggi, jam)
     cursor.execute(sql, val)
     db.commit()
     print("Status {} Pukul {} Telah Berhasil Ditambahkan".format(status, jam))
@@ -53,6 +52,7 @@ def tabel_db():
     sql = """CREATE TABLE BoxDump (
         tanggal VARCHAR(12),
         status VARCHAR(12),
+        tinggi VARCHAR(12),
         jam VARCHAR(12)
     )
     """
@@ -61,9 +61,9 @@ def tabel_db():
     print("Tabel BoxDump Telah Berhasil Dibuat")
 
 if __name__ == "__main__":
+    logging.basicConfig(filename='log/aquasetup.log', filemode='w', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
     try:
         create_db()
         tabel_db()
-        print("Jalankan aquastart.py untuk memulai monitoring")
     except(SystemExit, SystemError):
         logging.warning('This will get logged to a file')

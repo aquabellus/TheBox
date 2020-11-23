@@ -95,7 +95,9 @@ def siagaI(s1, s2_2):
                 notif(status())
                 insert_db(status())
                 with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
-                    data = json.load(json_file)["{}".format(full)].append(report)
+                    data = json.load(json_file)
+                    temp = data["{}".format(full)]
+                    temp.append(report)
                 write_json(data)
                 s2_2 = 0
         s1 += 1
@@ -103,7 +105,9 @@ def siagaI(s1, s2_2):
             notif(status())
             insert_db(status())
             with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,tgl)) as json_file:
-                data = json.load(json_file)["{}".format(full)].append(report)
+                data = json.load(json_file)
+                temp = data["{}".format(full)]
+                temp.append(report)
             write_json(data)
             s1 = 0
 
@@ -115,7 +119,9 @@ def siagaII(s2, s3):
                 notif(status())
                 insert_db(status())
                 with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,tgl)) as json_file:
-                    data = json.load(json_file)["{}".format(full)].append(report)
+                    data = json.load(json_file)
+                    temp = data["{}".format(full)]
+                    temp.append(report)
                 write_json(data)
                 s3 = 0
         s2 += 1
@@ -123,7 +129,9 @@ def siagaII(s2, s3):
             notif(status())
             insert_db(status())
             with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,tgl)) as json_file:
-                data = json.load(json_file)["{}".format(full)].append(report)
+                data = json.load(json_file)
+                temp = data["{}".format(full)]
+                temp.append(report)
             write_json(data)
             s2 = 0
 
@@ -133,7 +141,9 @@ def danger(s3):
             notif(status())
             insert_db(status())
             with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,tgl)) as json_file:
-                data = json.load(json_file)["{}".format(full)].append(report)
+                data = json.load(json_file)
+                temp = data["{}".format(full)]
+                temp.append(report)
             write_json(data)
             s3 = 0
             while True:

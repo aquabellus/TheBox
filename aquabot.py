@@ -259,7 +259,7 @@ def button(update: Update , context: CallbackContext) -> None:
         if check() == False:
             if os.path.exists("aquastart.py"):
                 try:
-                    os.system("gnome-terminal -- python3 aquastart.py")
+                    os.system("lxterminal -e python3 aquastart.py")
                     sleep(1)
                 finally:
                     if check() == True:
@@ -275,7 +275,7 @@ def button(update: Update , context: CallbackContext) -> None:
     elif query.data == "100":
         if os.path.exists("aquasetup.py"):
             try:
-                os.system("gnome-terminal -- python3 aquasetup.py")
+                os.system("lxterminal -e python3 aquasetup.py")
                 sleep(1)
             finally:
                 query.edit_message_text("Script Berhasil Dijalan\nMohon Cek Log Untuk Detail Lebih Lanjut.")
@@ -341,7 +341,6 @@ if __name__ == "__main__":
         logging.warning('This will get logged to a file')
     finally:
         print("Bot Started")
-        # updater.idle()
         a = 0
         while True:
             now_minute = datetime.datetime.now().strftime("%M")

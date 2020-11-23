@@ -18,7 +18,7 @@ def insert_db(status):
     )
 
     cursor = db.cursor()
-    sql = "INSERT INTO BoxDump (thn, status, jam) VALUES (%s, %s, %s)"
+    sql = "INSERT INTO BoxDump (tanggal, status, jam) VALUES (%s, %s, %s)"
     val = (thn, status, jam)
     cursor.execute(sql, val)
     db.commit()
@@ -51,9 +51,9 @@ def tabel_db():
 
     cursor = db.cursor()
     sql = """CREATE TABLE BoxDump (
-        tanggal DATE(),
-        status CHAR(9),
-        jam TIME()
+        tanggal VARCHAR(12),
+        status VARCHAR(12),
+        jam VARCHAR(12)
     )
     """
 

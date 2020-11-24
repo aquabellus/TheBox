@@ -73,19 +73,16 @@ def cek():
     file_json = open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl))
     data = json.loads(file_json.read())
     saring = re.sub("[^0-9/]", "", str(data))
-    if json.loads(file_json.read()):
-        if (re.search(r"\d+\/\d+\/" + tgl, saring)):
-            return("Correct")
-        else:
-            with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
-                data = json.load(json_file)
-                data.clear()
-                data.update(tmprpt)
-            with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
-                json.dump(data, json_file, indent=4)
-            return("Incorrect")
+    if (re.search(r"\d+\/\d+\/" + tgl, saring)):
+        return("Correct")
     else:
-        os.remove(file_json)
+        with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
+            data = json.load(json_file)
+            data.clear()
+            data.update(tmprpt)
+        with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
+            json.dump(data, json_file, indent=4)
+        return("Incorrect")
 
 
 cek()
@@ -159,6 +156,7 @@ if __name__ == "__main__":
         except:
             logging.warning('This will get logged to a file')
         finally:
+            netral()
             if (GPIO.input(8) == False):
                 if (GPIO.input(10) == False):
                     s2 += 1

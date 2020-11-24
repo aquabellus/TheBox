@@ -51,7 +51,7 @@ def tabel_db():
     cursor = db.cursor()
     sql = """CREATE TABLE BoxDump (
         timestamp VARCHAR(14),
-        tanggal VARCHAR(16,
+        tanggal VARCHAR(16),
         status VARCHAR(32),
         tinggi VARCHAR(16),
         jam VARCHAR(16)

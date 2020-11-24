@@ -56,9 +56,6 @@ pidfile = "{}/helper/aquastart.pid".format(path)
 def cek():
     thn = datetime.datetime.now().strftime("%Y-%m")
     tgl = datetime.datetime.now().strftime("%d")
-    file_json = open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl))
-    data = json.loads(file_json.read())
-    saring = re.sub("[^0-9/]", "", str(data))
     if os.path.exists("/home/{}/Documents/BoxDump.d".format(nama)) == False:
         os.makedirs("/home/{}/Documents/BoxDump.d/{}".format(nama,thn))
         with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,tgl), "w") as outfile:
@@ -73,6 +70,9 @@ def cek():
                 with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,tgl), "w") as outfile:
                     outfile.write(json_object)
 
+    file_json = open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl))
+    data = json.loads(file_json.read())
+    saring = re.sub("[^0-9/]", "", str(data))
     if json.loads(file_json.read()):
         if (re.search(r"\d+\/\d+\/" + tgl, saring)):
             return("Correct")
@@ -131,7 +131,9 @@ open(pidfile, 'w').write(pid)
 def insert_server(timestamp, tanggal, waktu, ketinggian, status):
     tt = re.sub(r"[/]", "-", tanggal)
     wk = re.sub(r"[:]", "%3A", waktu)
-    request.urlopen("http://10.30.1.247/input_data_php/proses.php?timestamp={}&tanggal={}&waktu={}&ketinggian={}&status={}".format(timestamp, tt, wk, ketinggian, status))
+    sT = re.sub(r"[ ]", "+", status)
+    st = re.sub(r"[/]", "%2F", sT)
+    request.urlopen("http://10.30.1.247/input_data_php/proses.php?timestamp={}&tanggal={}&waktu={}&ketinggian={}&status={}".format(timestamp, tt, wk, ketinggian, st))
 
 s1 = int()
 s2 = int()
@@ -154,9 +156,7 @@ if __name__ == "__main__":
 
         try:
             cek()
-        except(NameError, SystemError):
-            logging.error('This will get logged to a file')
-        except(SystemExit, KeyboardInterrupt):
+        except:
             logging.warning('This will get logged to a file')
         finally:
             if (GPIO.input(8) == False):
@@ -245,5 +245,5 @@ if __name__ == "__main__":
                 s1 = 0
                 s2 = 0
                 s3 = 0
-        os.system("clear")
         sleep(1)
+        os.system("clear")

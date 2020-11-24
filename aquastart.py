@@ -3,6 +3,7 @@ import datetime, os, json, getpass, re, math, random, pandas, logging
 from aquabot import notif, alert, pressed
 from aquasetup import json_setup, insert_db
 from time import sleep
+from urllib import request
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
@@ -38,6 +39,7 @@ def hijau():
 tmprpt = {
     "{}".format(datetime.datetime.now().strftime("%Y/%m/%d")) : [
         {
+            "Timestamp" : datetime.datetime.now().strftime("%Y%m%d%H%M%S"),
             "Status" : "Mulai",
             "Tinggi" : "0M",
             "Jam" : datetime.datetime.now().strftime("%H:%M:%S")
@@ -71,16 +73,19 @@ def cek():
                 with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,tgl), "w") as outfile:
                     outfile.write(json_object)
 
-    if (re.search(r"\d+\/\d+\/" + tgl, saring)):
-        print("Json file correct")
+    if json.loads(file_json.read()):
+        if (re.search(r"\d+\/\d+\/" + tgl, saring)):
+            return("Correct")
+        else:
+            with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
+                data = json.load(json_file)
+                data.clear()
+                data.update(tmprpt)
+            with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
+                json.dump(data, json_file, indent=4)
+            return("Incorrect")
     else:
-        with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
-            data = json.load(json_file)
-            data.clear()
-            data.update(tmprpt)
-        with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
-            json.dump(data, json_file, indent=4)
-        print("Menulis ulang json")
+        os.remove(file_json)
 
 
 cek()
@@ -123,6 +128,11 @@ if os.path.isfile(pidfile):
     print("{} Sudah Tersedia, Menulis Ulang ...".format(pidfile))
 open(pidfile, 'w').write(pid)
 
+def insert_server(timestamp, tanggal, waktu, ketinggian, status):
+    tt = re.sub(r"[/]", "-", tanggal)
+    wk = re.sub(r"[:]", "%3A", waktu)
+    request.urlopen("http://10.30.1.247/input_data_php/proses.php?timestamp={}&tanggal={}&waktu={}&ketinggian={}&status={}".format(timestamp, tt, wk, ketinggian, status))
+
 s1 = int()
 s2 = int()
 s3 = int()
@@ -134,7 +144,9 @@ if __name__ == "__main__":
         tgl = datetime.datetime.now().strftime("%d")
         jam = datetime.datetime.now().strftime("%H:%M:%S")
         full = datetime.datetime.now().strftime("%Y/%m/%d")
+        timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
         report = {
+            "Timestamp" : timestamp,
             "Status" : status(),
             "Tinggi" : tinggi(),
             "Jam" : jam
@@ -152,7 +164,8 @@ if __name__ == "__main__":
                     s2 += 1
                     if s2 == 10:
                         notif(status())
-                        insert_db(status(), tinggi())
+                        insert_db(timestamp, status(), tinggi())
+                        insert_server(timestamp, full, jam, tinggi(), status())
                         with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
                             data = json.load(json_file)
                             temp = data["{}".format(full)]
@@ -162,7 +175,8 @@ if __name__ == "__main__":
                 s1 += 1
                 if s1 == 20:
                     notif(status())
-                    insert_db(status(), tinggi())
+                    insert_db(timestamp, status(), tinggi())
+                    insert_server(timestamp, full, jam, tinggi(), status())
                     with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
                         data = json.load(json_file)
                         temp = data["{}".format(full)]
@@ -174,7 +188,8 @@ if __name__ == "__main__":
                     s3 += 1
                     if s3 == 5:
                         notif(status())
-                        insert_db(status(), tinggi())
+                        insert_db(timestamp, status(), tinggi())
+                        insert_server(timestamp, full, jam, tinggi(), status())
                         with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
                             data = json.load(json_file)
                             temp = data["{}".format(full)]
@@ -184,7 +199,8 @@ if __name__ == "__main__":
                 s2 += 1
                 if s2 == 10:
                     notif(status())
-                    insert_db(status(), tinggi())
+                    insert_db(timestamp, status(), tinggi())
+                    insert_server(timestamp, full, jam, tinggi(), status())
                     with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
                         data = json.load(json_file)
                         temp = data["{}".format(full)]
@@ -194,7 +210,8 @@ if __name__ == "__main__":
             elif (GPIO.input(12) == False):
                 if (GPIO.input(10) == True):
                     notif(status())
-                    insert_db(status(), tinggi())
+                    insert_db(timestamp, status(), tinggi())
+                    insert_server(timestamp, full, jam, tinggi(), status())
                     with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
                         data = json.load(json_file)
                         temp = data["{}".format(full)]
@@ -213,6 +230,10 @@ if __name__ == "__main__":
                             pressed()
                             break
 
+            print("##########")
+            print("aquastart.py")
+            print("")
+            print("Status JSON : {}".format(cek()))
             print("Jumlah Deteksi Sensor")
             print("")
             print("Siaga I : {}x".format(s1))
@@ -220,8 +241,9 @@ if __name__ == "__main__":
             print("Bahaya : {}x".format(s3))
             print("")
             print("")
-            if (re.compile(r"00:0[01]:\d\d").search(jam)):
+            if (re.compile(r"00:00:\d\d").search(jam)):
                 s1 = 0
                 s2 = 0
                 s3 = 0
+        os.system("clear")
         sleep(1)

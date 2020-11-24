@@ -354,5 +354,14 @@ if __name__ == "__main__":
                     a = minute_count()
             else:
                 a = 0
-            print(a)
+            print("##########")
+            print("aquabot.py")
+            print("a telegram bot script")
+            if a == 0:
+                print("Script berjalan")
+                print("Notifikasi akan dikirimkan seketika apabila script berhenti")
+            else:
+                print("Script berhenti")
+                print("Script akan dicek ulang pada menit ke {}".format(a))
+            os.system("clear")
             sleep(1)

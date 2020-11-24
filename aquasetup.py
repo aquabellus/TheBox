@@ -6,7 +6,7 @@ json_setup = json.loads(open("setup.json").read())
 if os.path.exists("log/") == False:
     os.mkdir("log/")
 
-def insert_db(status, tinggi):
+def insert_db(timestamp, status, tinggi):
     jam = datetime.datetime.now().strftime("%H:%M:%S")
     tgl = datetime.datetime.now().strftime("%Y/%m/%d")
     db = mysql.connector.connect(
@@ -17,8 +17,8 @@ def insert_db(status, tinggi):
     )
 
     cursor = db.cursor()
-    sql = "INSERT INTO BoxDump (tanggal, status, tinggi, jam) VALUES (%s, %s, %s, %s)"
-    val = (tgl, status, tinggi, jam)
+    sql = "INSERT INTO BoxDump (timestamp, tanggal, status, tinggi, jam) VALUES (%s, %s, %s, %s, %s)"
+    val = (timestamp, tgl, status, tinggi, jam)
     cursor.execute(sql, val)
     db.commit()
     print("Status {} Pukul {} Telah Berhasil Ditambahkan".format(status, jam))
@@ -50,10 +50,11 @@ def tabel_db():
 
     cursor = db.cursor()
     sql = """CREATE TABLE BoxDump (
-        tanggal VARCHAR(12),
-        status VARCHAR(12),
-        tinggi VARCHAR(12),
-        jam VARCHAR(12)
+        timestamp VARCHAR(14),
+        tanggal VARCHAR(16,
+        status VARCHAR(32),
+        tinggi VARCHAR(16),
+        jam VARCHAR(16)
     )
     """
 

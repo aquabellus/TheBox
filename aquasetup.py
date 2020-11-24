@@ -66,5 +66,5 @@ if __name__ == "__main__":
     try:
         create_db()
         tabel_db()
-    except(SystemExit, SystemError):
+    except:
         logging.warning('This will get logged to a file')

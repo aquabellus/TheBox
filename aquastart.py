@@ -130,7 +130,8 @@ def insert_server(timestamp, tanggal, waktu, ketinggian, status):
     wk = re.sub(r"[:]", "%3A", waktu)
     sT = re.sub(r"[ ]", "+", status)
     st = re.sub(r"[/]", "%2F", sT)
-    request.urlopen("http://10.30.1.247/input_data_php/proses.php?timestamp={}&tanggal={}&waktu={}&ketinggian={}&status={}".format(timestamp, tt, wk, ketinggian, st))
+    tg = re.sub(r"[/]", "%2F", ketinggian)
+    request.urlopen("http://10.30.1.247/input_data_php/proses.php?timestamp={}&tanggal={}&waktu={}&ketinggian={}&status={}".format(timestamp, tt, wk, tg, st))
 
 s1 = int()
 s2 = int()

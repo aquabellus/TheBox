@@ -364,4 +364,4 @@ if __name__ == "__main__":
                 print("Script berhenti")
                 print("Script akan dicek ulang pada menit ke {}".format(a))
             sleep(1)
-        os.system("clear")
+            os.system("clear")

@@ -118,6 +118,19 @@ def command(update = Update, context = CallbackContext) -> None:
         pesan += "chatid : <code>{}</code>".format(buka["chatid"])
         context.bot.send_message(update.effective_message.chat.id, pesan, "HTML")
 
+def reboot(update = Update, context = CallbackContext):
+    keyboard = [
+        [
+            InlineKeyboardButton("Yes", callback_data="reboot")
+        ],
+        [
+            InlineKeyboardButton("Nevermind", callback_data="nmind")
+        ]
+    ]
+    inline_markup = InlineKeyboardMarkup(keyboard)
+    pesan = "Are you sure want to reboot this bot ?"
+    update.message.reply_text(pesan, reply_markup=inline_markup)
+
 def setup(update = Update, context = CallbackContext):
     keyboard = [
         [
@@ -180,6 +193,10 @@ def notif(status):
     else:
         Aqua.sendMessage(json_setup["chatid"], pesan[random.randrange(len(pesan))], parse_mode="HTML")
 
+def ready():
+    Aqua = telegram.Bot(json_setup["token"])
+    Aqua.sendMessage(json_setup["chatid"], "Aqua Ready")
+
 def alert():
     Aqua = telegram.Bot(json_setup["token"])
     pesan = [
@@ -235,6 +252,14 @@ def button(update: Update , context: CallbackContext) -> None:
         inline_markup = InlineKeyboardMarkup(keyboard)
         query.edit_message_text("Kamu serius ?", reply_markup=inline_markup)
         
+    elif query.data == "reboot":
+        query.edit_message_text("Rebooting bot ...")
+        if os.path.exists("helper/aquabot.pid"):
+            os.system("kill {}".format(open("helper/aquabot.pid").read()))
+        else:
+            pesan = "Helper file not found\n\nOperation aborted !!!"
+            context.bot.send_message(update.effective_message.chat.id, pesan, parse_mode="HTML")
+
     elif query.data == "tentu":
         query.edit_message_text("Menghentikan Script ...")
         if check() == True:
@@ -319,6 +344,7 @@ text_handler = MessageHandler(Filters.text, text)
 dispatcher.add_handler(CommandHandler("setup", setup))
 dispatcher.add_handler(CommandHandler("log", log))
 dispatcher.add_handler(CommandHandler("status", status))
+dispatcher.add_handler(CommandHandler("reboot", reboot))
 command_handler = MessageHandler(Filters.command, command)
 dispatcher.add_handler(CallbackQueryHandler(button))
 dispatcher.add_handler(command_handler)
@@ -335,11 +361,10 @@ if __name__ == "__main__":
     logging.basicConfig(filename='log/aquabot.log', filemode='w', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
     try:
         updater.start_polling()
-    except(NameError, SystemError):
-        logging.error('This will get logged to a file')
-    except(SystemExit, KeyboardInterrupt):
+    except:
         logging.warning('This will get logged to a file')
     finally:
+        ready()
         print("Bot Started")
         a = 0
         while True:
@@ -357,6 +382,8 @@ if __name__ == "__main__":
             print("##########")
             print("aquabot.py")
             print("a telegram bot script")
+            print("")
+            print("")
             if a == 0:
                 print("Script berjalan")
                 print("Notifikasi akan dikirimkan seketika apabila script berhenti")

@@ -54,6 +54,9 @@ pidfile = "{}/helper/aquastart.pid".format(path)
 def cek():
     thn = datetime.datetime.now().strftime("%Y-%m")
     tgl = datetime.datetime.now().strftime("%d")
+    file_json = open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl))
+    data = json.loads(file_json.read())
+    saring = re.sub("[^0-9/]", "", str(data))
     if os.path.exists("/home/{}/Documents/BoxDump.d".format(nama)) == False:
         os.makedirs("/home/{}/Documents/BoxDump.d/{}".format(nama,thn))
         with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,tgl), "w") as outfile:
@@ -67,6 +70,18 @@ def cek():
             if os.path.exists("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,tgl)) == False:
                 with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,tgl), "w") as outfile:
                     outfile.write(json_object)
+
+    if (re.search(r"\d+\/\d+\/" + tgl, saring)):
+        print("Json file correct")
+    else:
+        with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
+            data = json.load(json_file)
+            data.clear()
+            data.update(tmprpt)
+        with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
+            json.dump(data, json_file, indent=4)
+        print("Menulis ulang json")
+
 
 cek()
 
@@ -126,8 +141,7 @@ if __name__ == "__main__":
         }   
 
         try:
-            if (re.compile(r"00\:00\:\d\d").search(jam)):
-                cek()
+            cek()
         except(NameError, SystemError):
             logging.error('This will get logged to a file')
         except(SystemExit, KeyboardInterrupt):

@@ -366,32 +366,4 @@ if __name__ == "__main__":
     finally:
         ready()
         print("Bot Started")
-        a = 0
-        while True:
-            now_minute = datetime.datetime.now().strftime("%M")
-            int_min = int(now_minute)
-            if check() == False:
-                if a == 0:
-                    notif("mati")
-                    a = minute_count()
-                elif int_min == a:
-                    notif("mati")
-                    a = minute_count()
-            else:
-                a = 0
-            print("##########")
-            print("aquabot.py")
-            print("a telegram bot script")
-            print("")
-            print("")
-            if a == 0:
-                print("Script berjalan")
-                print("Notifikasi akan dikirimkan seketika apabila script berhenti")
-            else:
-                print("Script berhenti")
-                print("Script akan dicek ulang pada menit ke {}".format(a))
-            if datetime.datetime.now().strftime("%H%M") == "0005":
-                if os.path.exists("helper/aquabot.pid"):
-                    os.system("kill {}".format(open("helper/aquabot.pid").read()))
-            sleep(1)
-            os.system("clear")
+        updater.idle()

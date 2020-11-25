@@ -4,6 +4,8 @@ from telegram import ReplyKeyboardMarkup, Update, InlineKeyboardButton, InlineKe
 from telegram.ext import CommandHandler, Filters, MessageHandler, CallbackQueryHandler, CallbackContext, Updater
 from time import sleep
 
+logging.basicConfig(filename='log/aqualog.log', filemode='a', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
+
 json_setup = json.loads(open("setup.json").read())
 updater = telegram.ext.Updater(token=json_setup['token'], use_context=True)
 dispatcher = updater.dispatcher
@@ -152,16 +154,11 @@ def setup(update = Update, context = CallbackContext):
     update.message.reply_text(pesan, parse_mode="HTML", reply_markup=inline_markup)
 
 def log(update = Update, context = CallbackContext):
-    keyboard = [
-        [
-            InlineKeyboardButton("aquabot", callback_data="aquabot"),
-            InlineKeyboardButton("aquastart", callback_data="aquastart"),
-            InlineKeyboardButton("aquasetup", callback_data="aquasetup")
-        ]
-    ]
-    inline_markup = InlineKeyboardMarkup(keyboard)
-    pesan = "Silahkan pilih log yang ingin ditampilkan"
-    update.message.reply_text(pesan, reply_markup=inline_markup)
+    if os.path.exists("log/aqualog.log"):
+        pesan = open("helper/aqualog.log").read()
+    else:
+        pesan = "Log tidak ditemukan"
+    update.message.reply_text(pesan)
 
 def status(update = Update, context = CallbackContext):
     keyboard = [
@@ -306,24 +303,6 @@ def button(update: Update , context: CallbackContext) -> None:
         else:
             query.edit_message_text("File tidak ditemukan !!!")
 
-    elif query.data == "aquabot":
-        if os.path.exists("log/aquabot.log"):
-            log = open("log/aquabot.log").read()
-            context.bot.send_message(update.effective_message.chat.id, "<b>aquabot.log</b>\n\n" + log, "HTML")
-        else:
-            context.bot.send_message(update.effective_message.chat.id, "File tidak ditemukan")
-    elif query.data == "aquastart":
-        if os.path.exists("log/aquastart.log"):
-            log = open("log/aquastart.log").read()
-            context.bot.send_message(update.effective_message.chat.id, "<b>aquastart.log</b>\n\n" + log, "HTML")
-        else:
-            context.bot.send_message(update.effective_message.chat.id, "File tidak ditemukan")
-    elif query.data == "aquasetup":
-        if os.path.exists("log/aquasetup.log"):
-            log = open("log/aquasetup.log").read()
-            context.bot.send_message(update.effective_message.chat.id, "<b>aquasetup.log</b>\n\n" + log, "HTML")
-        else:
-            context.bot.send_message(update.effective_message.chat.id, "File tidak ditemukan")
     else:
         pesan = [
             "Dasar",
@@ -356,13 +335,11 @@ if os.path.isfile(pidfile):
     print("{} Sudah Tersedia, Menulis Ulang ...".format(pidfile))
 open(pidfile, 'w').write(pid)
 
-
 if __name__ == "__main__":
-    logging.basicConfig(filename='log/aquabot.log', filemode='w', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
     try:
         updater.start_polling()
     except:
-        logging.warning('This will get logged to a file')
+        logging.debug('This will get logged to a file')
     finally:
         ready()
         print("Bot Started")

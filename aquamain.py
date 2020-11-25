@@ -1,6 +1,8 @@
-import os, datetime, time,re, psutil
+import os, datetime, time,re, psutil, logging
 from aquabot import check, minute_count, notif
 from aquastart import s1, s2, s3, cek, nama
+
+logging.basicConfig(filename='log/aqualog.log', filemode='a', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
 
 def check_bot():
     for process in psutil.process_iter():
@@ -15,12 +17,15 @@ def bot_try():
         b -= 60
     return(b)
 
-
 if __name__ == "__main__":
     a = 0
     b = bot_try()
     while True:
         minute = datetime.datetime.now().strftime("%M")
+        try:
+            cek()
+        except:
+            logging.debug("This will get logged to a file")
         if check() == False:
             if a == 0:
                 notif("mati")

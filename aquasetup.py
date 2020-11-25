@@ -1,6 +1,8 @@
 import mysql.connector, json, datetime, logging, os
 from time import sleep
 
+logging.basicConfig(filename='log/aqualog.log', filemode='a', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
+
 json_setup = json.loads(open("setup.json").read())
 
 if os.path.exists("log/") == False:
@@ -62,9 +64,8 @@ def tabel_db():
     print("Tabel BoxDump Telah Berhasil Dibuat")
 
 if __name__ == "__main__":
-    logging.basicConfig(filename='log/aquasetup.log', filemode='w', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
     try:
         create_db()
         tabel_db()
     except:
-        logging.warning('This will get logged to a file')
+        logging.debug('This will get logged to a file')

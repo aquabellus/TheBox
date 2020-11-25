@@ -3,6 +3,8 @@ import datetime, os, json, getpass, re, math, random, pandas, logging
 from time import sleep
 from urllib import request
 
+logging.basicConfig(filename='log/aqualog.log', filemode='a', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
+
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
 
@@ -148,7 +150,6 @@ s2 = int()
 s3 = int()
 
 if __name__ == "__main__":
-    logging.basicConfig(filename='log/aquastart.log', filemode='w', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
     from aquabot import notif, alert, pressed, check, minute_count
     from aquasetup import insert_db
     while True:
@@ -167,7 +168,7 @@ if __name__ == "__main__":
         try:
             cek()
         except:
-            logging.warning('This will get logged to a file')
+            logging.debug('This will get logged to a file')
         finally:
             netral()
             if (GPIO.input(8) == False):

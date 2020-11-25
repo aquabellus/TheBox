@@ -1,5 +1,11 @@
 # Alpha Build #
 
+### 25/11/2020
+- Perbaikan integrasi antara bot dengan "Database Server"
+- Penambahan fitur mulai ulang pada bot
+- Penambahan timestamp pada hasil monitoring
+- Meringkas hasil output terminal pada tiap script
+
 ### 23/11/2020
 - Perbaikan beberapa bug
 

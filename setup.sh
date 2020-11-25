@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 #
 #   Created on 22th Nov 2020
 #   08:11 AM

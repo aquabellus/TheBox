@@ -390,5 +390,8 @@ if __name__ == "__main__":
             else:
                 print("Script berhenti")
                 print("Script akan dicek ulang pada menit ke {}".format(a))
+            if datetime.datetime.now().strftime("%H%M") == "0005":
+                if os.path.exists("helper/aquabot.pid"):
+                    os.system("kill {}".format(open("helper/aquabot.pid").read()))
             sleep(1)
             os.system("clear")

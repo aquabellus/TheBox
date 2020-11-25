@@ -5,15 +5,13 @@
 #   @aquabellus
 #
 
-declare -r dir=$(eval echo $HOME)/Documents/The-Box
-
 while true; do
-    cd $dir
-    if ps -p $(cat helper/aquabot.pid) | grep -o $(cat helper/aquabot.pid); then
-        sleep 1
+    cd /home/$(whoami)/Documents/The-Box/
+    if ps -p $(cat ./helper/aquabot.pid) | grep -o $(cat ./helper/aquabot.pid); then
+        sleep 5
     else
-        python3 aquabot.py
+        lxterminal -e python3 ./aquabot.py
+        sleep 5
     fi
-    sleep 5
     clear
 done

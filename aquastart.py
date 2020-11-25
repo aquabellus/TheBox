@@ -1,7 +1,5 @@
 import RPi.GPIO as GPIO
 import datetime, os, json, getpass, re, math, random, pandas, logging
-from aquabot import notif, alert, pressed
-from aquasetup import json_setup, insert_db
 from time import sleep
 from urllib import request
 
@@ -47,6 +45,9 @@ tmprpt = {
     ]
 }
 
+logging.basicConfig(filename='log/aquastart.log', filemode='w', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+
+json_setup = json.loads(open("setup.json").read())
 json_object = json.dumps(tmprpt, indent = 4)
 nama = getpass.getuser()
 path = os.path.dirname(os.path.realpath(__file__))
@@ -73,17 +74,27 @@ def cek():
     file_json = open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl))
     data = json.loads(file_json.read())
     saring = re.sub("[^0-9/]", "", str(data))
-    if (re.search(r"\d+\/\d+\/" + tgl, saring)):
-        return("Correct")
+    if validatejson(file_json) == True:
+        if (re.search(r"\d+\/\d+\/" + tgl, saring)):
+            return("Correct")
+        else:
+            with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
+                data = json.load(json_file)
+                data.clear()
+                data.update(tmprpt)
+            with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
+                json.dump(data, json_file, indent=4)
+            return("Incorrect")
     else:
-        with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
-            data = json.load(json_file)
-            data.clear()
-            data.update(tmprpt)
-        with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
-            json.dump(data, json_file, indent=4)
-        return("Incorrect")
+        os.remove(file_json)
+        cek()
 
+def validatejson(file):
+    try:
+        json.loads(open(file))
+    except:
+        return(False)
+    return(True)
 
 cek()
 
@@ -138,7 +149,8 @@ s2 = int()
 s3 = int()
 
 if __name__ == "__main__":
-    logging.basicConfig(filename='log/aquastart.log', filemode='w', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+    from aquabot import notif, alert, pressed
+    from aquasetup import insert_db
     while True:
         thn = datetime.datetime.now().strftime("%Y-%m")
         tgl = datetime.datetime.now().strftime("%d")

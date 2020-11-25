@@ -45,8 +45,6 @@ tmprpt = {
     ]
 }
 
-logging.basicConfig(filename='log/aquastart.log', filemode='w', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
-
 json_setup = json.loads(open("setup.json").read())
 json_object = json.dumps(tmprpt, indent = 4)
 nama = getpass.getuser()
@@ -76,7 +74,7 @@ def cek():
     saring = re.sub("[^0-9/]", "", str(data))
     if validatejson(file_json) == True:
         if (re.search(r"\d+\/\d+\/" + tgl, saring)):
-            return("Correct")
+            dummy = "dummy"
         else:
             with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
                 data = json.load(json_file)
@@ -84,10 +82,11 @@ def cek():
                 data.update(tmprpt)
             with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
                 json.dump(data, json_file, indent=4)
-            return("Incorrect")
+        return("Correct")
     else:
-        os.remove(file_json)
+        os.remove("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl))
         cek()
+        return("Incorrect")
 
 def validatejson(file):
     try:
@@ -142,14 +141,15 @@ def insert_server(timestamp, tanggal, waktu, ketinggian, status):
     sT = re.sub(r"[ ]", "+", status)
     st = re.sub(r"[/]", "%2F", sT)
     tg = re.sub(r"[/]", "%2F", ketinggian)
-    request.urlopen("http://10.30.1.247/input_data_php/proses.php?timestamp={}&tanggal={}&waktu={}&ketinggian={}&status={}".format(timestamp, tt, wk, tg, st))
+    request.urlopen("http://10.30.1.247/input_data_php/proses.php?Timestamp={}&Tanggal={}&Waktu={}&Ketinggian={}&Status={}".format(timestamp, tt, wk, tg, st))
 
 s1 = int()
 s2 = int()
 s3 = int()
 
 if __name__ == "__main__":
-    from aquabot import notif, alert, pressed
+    logging.basicConfig(filename='log/aquastart.log', filemode='w', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+    from aquabot import notif, alert, pressed, check, minute_count
     from aquasetup import insert_db
     while True:
         thn = datetime.datetime.now().strftime("%Y-%m")
@@ -241,18 +241,7 @@ if __name__ == "__main__":
                             pressed()
                             break
 
-            print("##########")
-            print("aquastart.py")
-            print("")
-            print("Status JSON : {}".format(cek()))
-            print("Jumlah Deteksi Sensor")
-            print("")
-            print("Siaga I : {}x".format(s1))
-            print("Siaga II : {}x".format(s2))
-            print("Bahaya : {}x".format(s3))
-            print("")
-            print("")
-            if (re.compile(r"00:00:\d\d").search(jam)):
+            if (re.compile(r"00:00:0\d").search(jam)):
                 s1 = 0
                 s2 = 0
                 s3 = 0

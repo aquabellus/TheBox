@@ -8,11 +8,15 @@ if os.path.exists("helper/") == False:
 from aquabot import check, minute_count, notif
 from aquastart import cek, nama, validatejson
 
+logging.basicConfig(filename='log/aqualog.log', filemode='a', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.WARNING)
+
 def check_bot():
-    for process in psutil.process_iter():
-        if process.cmdline() == ['python3', 'aquabot.py']:
-            return(True)
-    return(False)
+    get_process = os.popen("ps ax | grep aquabot.py | grep -v grep").read()
+    try:
+        pid = re.search(r"\d+", get_process)
+    except:
+        return(False)
+    return(pid)
 
 def bot_try():
     now = datetime.datetime.now().strftime("%M")
@@ -21,19 +25,13 @@ def bot_try():
         b -= 60
     return(b)
 
-if __name__ == "__main__":
+def main():
     a = 0
     b = bot_try()
     while True:
-        if os.path.exists("helper/aquastart.pid") == False:
-            open("helper/aquastart.pid", "w+")
         if os.path.exists("log/aqualog.log") == False:
             open("log/aqualog.log", "w+")
         minute = datetime.datetime.now().strftime("%M")
-        try:
-            cek()
-        except:
-            logging.debug("This will get logged to a file")
         if check() == False:
             if a == 0:
                 notif("mati")
@@ -86,3 +84,9 @@ if __name__ == "__main__":
             print("Notifikasi Akan Dikirimkan Seketika Apabila Script Tidak Terdeteksi/Berhenti")
         time.sleep(1)
         os.system("clear")
+
+if __name__ == "__main__":
+    try:
+        main()
+    except:
+        logging.warning("This will get logged to a file")

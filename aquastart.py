@@ -4,8 +4,6 @@ from time import sleep
 from urllib import request
 
 logging.basicConfig(filename='log/aqualog.log', filemode='a', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
-if os.path.exists("helper/") == False:
-    os.mkdir("helper/")
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
@@ -167,9 +165,7 @@ if __name__ == "__main__":
             logging.debug('This will get logged to a file')
         finally:
             netral()
-            if os.path.isfile(pidfile):
-                open(pidfile, 'w').write(pid)
-
+            open(pidfile, 'w').write(pid)
             if (GPIO.input(8) == False):
                 if (GPIO.input(10) == False):
                     s2 += 1

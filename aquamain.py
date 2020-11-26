@@ -2,7 +2,8 @@ import os, datetime, time,re, psutil, logging
 
 if os.path.exists("log/") == False:
     os.mkdir("log/")
-logging.basicConfig(filename='log/aqualog.log', filemode='a', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
+if os.path.exists("helper/") == False:
+    os.mkdir("helper/")
 
 from aquabot import check, minute_count, notif
 from aquastart import cek, nama, validatejson
@@ -24,6 +25,10 @@ if __name__ == "__main__":
     a = 0
     b = bot_try()
     while True:
+        if os.path.exists("helper/aquastart.pid") == False:
+            open("helper/aquastart.pid", "w+")
+        if os.path.exists("log/aqualog.log") == False:
+            open("log/aqualog.log", "w+")
         minute = datetime.datetime.now().strftime("%M")
         try:
             cek()

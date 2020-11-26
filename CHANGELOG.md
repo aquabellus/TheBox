@@ -1,5 +1,11 @@
 # Alpha Build #
 
+### 26/11/2020
+- Merubah mode repo dari pribadi ke publik
+- Merubah skema logging script
+- Perbaikan pada metode kill
+- Perbaikan input data ke database
+
 ### 25/11/2020
 - Perbaikan integrasi antara bot dengan "Database Server"
 - Penambahan fitur mulai ulang pada bot

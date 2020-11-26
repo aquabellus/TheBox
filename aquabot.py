@@ -345,5 +345,10 @@ if __name__ == "__main__":
         logging.warning('This will get logged to a file')
     finally:
         ready()
-        print("Bot Started")
+        print("#########################")
+        print("")
+        print("   Aqua Telegram Bot")
+        print(" dont close this window")
+        print("")
+        print("#########################")
         updater.idle()

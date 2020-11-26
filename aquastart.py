@@ -75,9 +75,9 @@ def validatejson():
     data = json.loads(file_json.read())
     saring = re.sub("[^0-9/]", "", str(data))
     try:
-        json.loads(open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)))
+        json.loads(open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)).read())
     except:
-        os.remove("/home/{}/Documents/BoxDump.d/{}/{},json".format(nama, thn, tgl))
+        os.remove("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl))
         cek()
         return(False)
     if (re.search(r"\d+\/\d+\/" + tgl, saring)):
@@ -140,9 +140,6 @@ s2 = int()
 s3 = int()
 
 if __name__ == "__main__":
-    i = s1
-    ii = s2
-    iii = s3
     from aquabot import notif, alert, pressed, check, minute_count
     from aquasetup import insert_db
     while True:
@@ -166,8 +163,8 @@ if __name__ == "__main__":
             netral()
             if (GPIO.input(8) == False):
                 if (GPIO.input(10) == False):
-                    ii += 1
-                    if ii == 10:
+                    s2 += 1
+                    if s2 == 10:
                         notif(status())
                         insert_db(timestamp, status(), tinggi())
                         insert_server(timestamp, full, jam, tinggi(), status())
@@ -176,9 +173,9 @@ if __name__ == "__main__":
                             temp = data["{}".format(full)]
                             temp.append(report)
                         write_json(data)
-                        ii = 0
-                i += 1
-                if i == 20:
+                        s2 = 0
+                s1 += 1
+                if s1 == 20:
                     notif(status())
                     insert_db(timestamp, status(), tinggi())
                     insert_server(timestamp, full, jam, tinggi(), status())
@@ -187,11 +184,11 @@ if __name__ == "__main__":
                         temp = data["{}".format(full)]
                         temp.append(report)
                     write_json(data)
-                    i = 0
+                    s1 = 0
             elif (GPIO.input(10) == False):
                 if (GPIO.input(12) == False):
-                    iii += 1
-                    if iii == 5:
+                    s3 += 1
+                    if s3 == 5:
                         notif(status())
                         insert_db(timestamp, status(), tinggi())
                         insert_server(timestamp, full, jam, tinggi(), status())
@@ -200,9 +197,9 @@ if __name__ == "__main__":
                             temp = data["{}".format(full)]
                             temp.append(report)
                         write_json(data)
-                        iii = 0
-                ii += 1
-                if ii == 10:
+                        s3 = 0
+                s2 += 1
+                if s2 == 10:
                     notif(status())
                     insert_db(timestamp, status(), tinggi())
                     insert_server(timestamp, full, jam, tinggi(), status())
@@ -211,7 +208,7 @@ if __name__ == "__main__":
                         temp = data["{}".format(full)]
                         temp.append(report)
                     write_json(data)
-                    ii = 0
+                    s2 = 0
             elif (GPIO.input(12) == False):
                 if (GPIO.input(10) == True):
                     notif(status())
@@ -222,7 +219,7 @@ if __name__ == "__main__":
                         temp = data["{}".format(full)]
                         temp.append(report)
                     write_json(data)
-                    iii = 0
+                    s2 = 0
                     while (GPIO.input(16) == False):
                         netral()
                         sleep(1)
@@ -236,9 +233,27 @@ if __name__ == "__main__":
                             break
 
             if (re.compile(r"00:00:0\d").search(jam)):
-                i = 0
-                ii = 0
-                iii = 0
+                s1 = 0
+                s2 = 0
+                s3 = 0
+
+            if validatejson() == True:
+                jsonStatus = "Correct"
+            else:
+                jsonStatus = "Incorrect"
+            print("#########################")
+            print("")
+            print("   Monitoring Script")
+            print(" dont close this window")
+            print("")
+            print("#########################")
+            print("\n"*3)
+            print("Status file json : {}".format(jsonStatus))
+            print("")
+            print("Hasil :")
+            print("Siaga I : {}".format(s1))
+            print("Siaga II : {}".format(s2))
+            print("Bahaya : {}".format(s3))
 
         sleep(1)
         os.system("clear")

@@ -1,7 +1,7 @@
 import mysql.connector, json, datetime, logging, os
 from time import sleep
 
-logging.basicConfig(filename='log/aqualog.log', filemode='a', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
+logging.basicConfig(filename='log/aqualog.log', filemode='a', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.WARNING)
 
 json_setup = json.loads(open("setup.json").read())
 
@@ -65,4 +65,4 @@ if __name__ == "__main__":
         create_db()
         tabel_db()
     except:
-        logging.debug('This will get logged to a file')
+        logging.warning('This will get logged to a file')

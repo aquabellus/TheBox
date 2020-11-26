@@ -4,7 +4,7 @@ from telegram import ReplyKeyboardMarkup, Update, InlineKeyboardButton, InlineKe
 from telegram.ext import CommandHandler, Filters, MessageHandler, CallbackQueryHandler, CallbackContext, Updater
 from time import sleep
 
-logging.basicConfig(filename='log/aqualog.log', filemode='a', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+logging.basicConfig(filename='log/aqualog.log', filemode='a', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.WARNING)
 
 json_setup = json.loads(open("setup.json").read())
 updater = telegram.ext.Updater(token=json_setup['token'], use_context=True)
@@ -266,29 +266,21 @@ def button(update: Update , context: CallbackContext) -> None:
     elif query.data == "reboot":
         query.edit_message_text("Rebooting bot ...")
         a = os.popen("ps ax | grep aquabot.py | grep -v grep").read()
-        b = a.split()
-        pid = b[0]
         try:
-            os.kill(int(pid), signal.SIGKILL)
+            os.kill(int(re.search(r"\d+", a).group()), signal.SIGKILL)
         except:
             pesan = "Bot gagal dimulai ulang"
             context.bot.send_message(update.effective_message.chat.id, pesan)
 
     elif query.data == "tentu":
         query.edit_message_text("Menghentikan Script ...")
+        a = os.popen("ps ax | grep aquastart.py | grep -v grep").read()
         if check() == True:
-            if os.path.exists("helper/aquastart.pid"):
-                try:
-                    os.system("kill {}".format(open("helper/aquastart.pid").read()))
-                    sleep(1)
-                finally:
-                    if check() == False:
-                        context.bot.send_message(update.effective_message.chat.id, "Script Berhasil Dihentikan")
-                    else:
-                        context.bot.send_message(update.effective_message.chat.id, "Gagal Menghentikan Script")
-            else:
-                pesan = "File Daemon Tidak Ditemukan\nGagal Menghentikan Script"
-                context.bot.send_message(update.effective_message.chat.id, pesan, parse_mode="HTML")
+            try:
+                os.system("kill {}".format(re.search(r"\d+", a).group()))
+            except:
+                context.bot.send_message(update.effective_message.chat.id, "Gagal Menghentikan Script")
+            context.bot.send_message(update.effective_message.chat.id, "Script Berhasil Dihentikan")
         else:
             context.bot.send_message(update.effective_message.chat.id, "Script Sudah Berhenti.")
 

@@ -5,9 +5,6 @@ logging.basicConfig(filename='log/aqualog.log', filemode='a', format='%(asctime)
 
 json_setup = json.loads(open("setup.json").read())
 
-if os.path.exists("log/") == False:
-    os.mkdir("log/")
-
 def insert_db(timestamp, status, tinggi):
     jam = datetime.datetime.now().strftime("%H:%M:%S")
     tgl = datetime.datetime.now().strftime("%Y/%m/%d")

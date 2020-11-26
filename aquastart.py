@@ -50,9 +50,6 @@ tmprpt = {
 json_setup = json.loads(open("setup.json").read())
 json_object = json.dumps(tmprpt, indent = 4)
 nama = getpass.getuser()
-path = os.path.dirname(os.path.realpath(__file__))
-pid = str(os.getpid())
-pidfile = "{}/helper/aquastart.pid".format(path)
 
 def cek():
     thn = datetime.datetime.now().strftime("%Y-%m")
@@ -131,11 +128,6 @@ def tinggi():
         tinggi = str(json_setup["B"])
     return(tinggi)
 
-if os.path.exists("helper/") == False:
-    os.mkdir("helper/")
-if os.path.isfile(pidfile):
-    print("{} Sudah Tersedia, Menulis Ulang ...".format(pidfile))
-open(pidfile, 'w').write(pid)
 
 def insert_server(timestamp, tanggal, waktu, ketinggian, status):
     tt = re.sub(r"[/]", "-", tanggal)
@@ -246,5 +238,8 @@ if __name__ == "__main__":
                 s1 = 0
                 s2 = 0
                 s3 = 0
+            i = s1
+            ii = s2
+            iii = s3
         sleep(1)
         os.system("clear")

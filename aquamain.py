@@ -1,7 +1,9 @@
 import os, datetime, time,re, psutil, logging
 from aquabot import check, minute_count, notif
-from aquastart import s1, s2, s3, cek, nama
+from aquastart import i, ii, iii, cek, nama
 
+if os.path.exists("log/") == False:
+    os.mkdir("log/")
 logging.basicConfig(filename='log/aqualog.log', filemode='a', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
 
 def check_bot():
@@ -78,8 +80,8 @@ if __name__ == "__main__":
         print("")
         print("Status JSON Dump : {}".format(cek()))
         print("Hasil Monitor :")
-        print("Siaga I : {} Kali".format(s1))
-        print("Siaga II : {} Kali".format(s2))
-        print("Bahaya : {} Kali".format(s3))
+        print("Siaga I : {} Kali".format(i))
+        print("Siaga II : {} Kali".format(ii))
+        print("Bahaya : {} Kali".format(iii))
         time.sleep(1)
         os.system("clear")

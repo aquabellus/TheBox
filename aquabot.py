@@ -1,17 +1,14 @@
-import telegram, datetime, telegram.ext, logging, random, psutil, os, subprocess, re, pandas
+import telegram, datetime, telegram.ext, logging, random, psutil, os, subprocess, re, pandas, signal
 import getpass, json
 from telegram import ReplyKeyboardMarkup, Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CommandHandler, Filters, MessageHandler, CallbackQueryHandler, CallbackContext, Updater
 from time import sleep
 
-logging.basicConfig(filename='log/aqualog.log', filemode='a', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
+logging.basicConfig(filename='log/aqualog.log', filemode='a', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
 json_setup = json.loads(open("setup.json").read())
 updater = telegram.ext.Updater(token=json_setup['token'], use_context=True)
 dispatcher = updater.dispatcher
-path = os.path.dirname(os.path.realpath(__file__))
-pid = str(os.getpid())
-pidfile = "{}/helper/aquabot.pid".format(path)
 
 if os.path.exists("log/") == False:
     os.mkdir("log/")
@@ -120,6 +117,16 @@ def command(update = Update, context = CallbackContext) -> None:
         pesan += "chatid : <code>{}</code>".format(buka["chatid"])
         context.bot.send_message(update.effective_message.chat.id, pesan, "HTML")
 
+def clear(update = Update, context = CallbackContext):
+    update.message.reply_text("Membersihkan log ...")
+    if os.path.exists("log/aqualog.log"):
+        os.remove("log/aqualog.log")
+        jawaban = "Log berhasil dibersihkan"
+    else:
+        jawaban = "File log tidak ditemukan"
+    sleep(1)
+    context.bot.send_message(update.effective_message.chat.id, jawaban)
+
 def reboot(update = Update, context = CallbackContext):
     keyboard = [
         [
@@ -155,7 +162,7 @@ def setup(update = Update, context = CallbackContext):
 
 def log(update = Update, context = CallbackContext):
     if os.path.exists("log/aqualog.log"):
-        pesan = open("helper/aqualog.log").read()
+        pesan = open("log/aqualog.log").read()
     else:
         pesan = "Log tidak ditemukan"
     update.message.reply_text(pesan)
@@ -251,27 +258,29 @@ def button(update: Update , context: CallbackContext) -> None:
         
     elif query.data == "reboot":
         query.edit_message_text("Rebooting bot ...")
-        if os.path.exists("helper/aquabot.pid"):
-            os.system("kill {}".format(open("helper/aquabot.pid").read()))
-        else:
-            pesan = "Helper file not found\n\nOperation aborted !!!"
-            context.bot.send_message(update.effective_message.chat.id, pesan, parse_mode="HTML")
+        a = os.popen("ps ax | grep aquabot.py | grep -v grep").read()
+        b = a.split()
+        pid = b[0]
+        try:
+            os.kill(int(pid), signal.SIGKILL)
+        except:
+            pesan = "Bot gagal dimulai ulang"
+            context.bot.send_message(update.effective_message.chat.id, pesan)
 
     elif query.data == "tentu":
         query.edit_message_text("Menghentikan Script ...")
         if check() == True:
-            if os.path.exists("helper/aquastart.pid"):
-                try:
-                    os.system("kill {}".format(open("helper/aquastart.pid").read()))
-                    sleep(1)
-                finally:
-                    if check() == False:
-                        context.bot.send_message(update.effective_message.chat.id, "Script Berhasil Dihentikan")
-                    else:
-                        context.bot.send_message(update.effective_message.chat.id, "Gagal Menghentikan Script")
-            else:
-                pesan = "File Daemon Tidak Ditemukan\nGagal Menghentikan Script"
-                context.bot.send_message(update.effective_message.chat.id, pesan, parse_mode="HTML")
+            a = os.popen("ps ax | grep aquastart.py | grep -v grep").read()
+            b = a.split()
+            pid = a[0]
+            try:
+                os.kill(int(pid), signal.SIGKILL)
+                sleep(1)
+            finally:
+                if check() == False:
+                    context.bot.send_message(update.effective_message.chat.id, "Script Berhasil Dihentikan")
+                else:
+                    context.bot.send_message(update.effective_message.chat.id, "Gagal Menghentikan Script")
         else:
             context.bot.send_message(update.effective_message.chat.id, "Script Sudah Berhenti.")
 
@@ -329,17 +338,11 @@ dispatcher.add_handler(CallbackQueryHandler(button))
 dispatcher.add_handler(command_handler)
 dispatcher.add_handler(text_handler)
 
-if os.path.exists("helper/") == False:
-    os.mkdir("helper/")
-if os.path.isfile(pidfile):
-    print("{} Sudah Tersedia, Menulis Ulang ...".format(pidfile))
-open(pidfile, 'w').write(pid)
-
 if __name__ == "__main__":
     try:
         updater.start_polling()
     except:
-        logging.debug('This will get logged to a file')
+        logging.warning('This will get logged to a file')
     finally:
         ready()
         print("Bot Started")

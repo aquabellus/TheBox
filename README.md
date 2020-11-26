@@ -2,6 +2,7 @@
 <img width="250" height="250" src=/assests/Logo.png>
 
 [![Build Status](https://travis-ci.com/aquabellus/The-Box.svg?token=j9yvFkydydnFaRfy8yoE&branch=master)](https://travis-ci.com/aquabellus/The-Box)
+[![CircleCI](https://circleci.com/gh/aquabellus/The-Box.svg?style=shield)](https://circleci.com/gh/aquabellus/The-Box)
 
 ## Concept
 <details>

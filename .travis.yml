@@ -13,3 +13,6 @@ install:
 
 script:
   - python3 aquacheck.py
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)

@@ -133,7 +133,7 @@ def insert_server(timestamp, tanggal, waktu, ketinggian, status):
     sT = re.sub(r"[ ]", "+", status)
     st = re.sub(r"[/]", "%2F", sT)
     tg = re.sub(r"[/]", "%2F", ketinggian)
-    request.urlopen("http://10.30.1.247/input_data_php/proses.php?Timestamp={}&Tanggal={}&Waktu={}&Ketinggian={}&Status={}".format(timestamp, tt, wk, tg, st))
+    request.urlopen("http://10.30.1.247/proses.php?Timestamp={}&Tanggal={}&Waktu={}&Ketinggian={}&Status={}".format(timestamp, tt, wk, tg, st))
 
 s1 = int()
 s2 = int()
@@ -247,7 +247,7 @@ if __name__ == "__main__":
             print(" dont close this window")
             print("")
             print("#########################")
-            print("\n"*3)
+            print("\n"*1)
             print("Status file json : {}".format(jsonStatus))
             print("")
             print("Hasil :")

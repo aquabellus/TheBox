@@ -35,7 +35,7 @@ We Are Currently Writing [Documentation](https://aquabellus.gitbook.io/aqua-bell
             |--setup.sh
             |--..
             
-            *BoxDump.d will automatically generated when you run aquastart.py
+    *BoxDump.d will automatically generated when you run aquastart.py
 
 ## Requirements
 Need python-devel to install requirements.

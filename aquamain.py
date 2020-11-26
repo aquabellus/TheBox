@@ -1,6 +1,6 @@
 import os, datetime, time,re, psutil, logging
 from aquabot import check, minute_count, notif
-from aquastart import i, ii, iii, cek, nama
+from aquastart import cek, nama, validatejson, i, ii, iii
 
 if os.path.exists("log/") == False:
     os.mkdir("log/")
@@ -37,6 +37,10 @@ if __name__ == "__main__":
                 a = minute_count()
         else:
             a = 0
+        if validatejson() == True:
+            jsonStatus = "Correct"
+        else:
+            jsonStatus = "Incorrect"
         print("      #############################")
         print("     #                           #")
         print("    #          TheBox           #")
@@ -78,7 +82,7 @@ if __name__ == "__main__":
             print("Trigger Script Terdeteksi")
             print("Notifikasi Akan Dikirimkan Seketika Apabila Script Tidak Terdeteksi/Berhenti")
         print("")
-        print("Status JSON Dump : {}".format(cek()))
+        print("Status JSON Dump : {}".format(jsonStatus))
         print("Hasil Monitor :")
         print("Siaga I : {} Kali".format(i))
         print("Siaga II : {} Kali".format(ii))

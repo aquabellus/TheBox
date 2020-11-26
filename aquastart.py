@@ -68,33 +68,31 @@ def cek():
                 with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,tgl), "w") as outfile:
                     outfile.write(json_object)
 
+def validatejson():
+    tgl = datetime.datetime.now().strftime("%d")
+    thn = datetime.datetime.now().strftime("%Y-%m")
     file_json = open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl))
     data = json.loads(file_json.read())
     saring = re.sub("[^0-9/]", "", str(data))
-    if validatejson(file_json) == True:
-        if (re.search(r"\d+\/\d+\/" + tgl, saring)):
-            dummy = "dummy"
-        else:
-            with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
-                data = json.load(json_file)
-                data.clear()
-                data.update(tmprpt)
-            with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
-                json.dump(data, json_file, indent=4)
-        return("Correct")
-    else:
-        os.remove("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl))
-        cek()
-        return("Incorrect")
-
-def validatejson(file):
     try:
-        json.loads(open(file))
+        json.loads(open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)))
     except:
+        os.remove("/home/{}/Documents/BoxDump.d/{}/{},json".format(nama, thn, tgl))
+        cek()
         return(False)
+    if (re.search(r"\d+\/\d+\/" + tgl, saring)):
+        dummy = "dummy"
+    else:
+        with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
+            data = json.load(json_file)
+            data.clear()
+            data.update(tmprpt)
+        with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
+            json.dump(data, json_file, indent=4)
     return(True)
 
 cek()
+validatejson()
 
 def write_json(data, filename=("/home/{}/Documents/BoxDump.d/{}/{}.json".format(getpass.getuser(), datetime.datetime.now().strftime("%Y-%m"), datetime.datetime.now().strftime("%d")))):
     with open(filename, 'w') as jswrt:
@@ -142,6 +140,9 @@ s2 = int()
 s3 = int()
 
 if __name__ == "__main__":
+    i = s1
+    ii = s2
+    iii = s3
     from aquabot import notif, alert, pressed, check, minute_count
     from aquasetup import insert_db
     while True:
@@ -165,8 +166,8 @@ if __name__ == "__main__":
             netral()
             if (GPIO.input(8) == False):
                 if (GPIO.input(10) == False):
-                    s2 += 1
-                    if s2 == 10:
+                    ii += 1
+                    if ii == 10:
                         notif(status())
                         insert_db(timestamp, status(), tinggi())
                         insert_server(timestamp, full, jam, tinggi(), status())
@@ -175,9 +176,9 @@ if __name__ == "__main__":
                             temp = data["{}".format(full)]
                             temp.append(report)
                         write_json(data)
-                        s2 = 0
-                s1 += 1
-                if s1 == 20:
+                        ii = 0
+                i += 1
+                if i == 20:
                     notif(status())
                     insert_db(timestamp, status(), tinggi())
                     insert_server(timestamp, full, jam, tinggi(), status())
@@ -186,11 +187,11 @@ if __name__ == "__main__":
                         temp = data["{}".format(full)]
                         temp.append(report)
                     write_json(data)
-                    s1 = 0
+                    i = 0
             elif (GPIO.input(10) == False):
                 if (GPIO.input(12) == False):
-                    s3 += 1
-                    if s3 == 5:
+                    iii += 1
+                    if iii == 5:
                         notif(status())
                         insert_db(timestamp, status(), tinggi())
                         insert_server(timestamp, full, jam, tinggi(), status())
@@ -199,9 +200,9 @@ if __name__ == "__main__":
                             temp = data["{}".format(full)]
                             temp.append(report)
                         write_json(data)
-                        s3 = 0
-                s2 += 1
-                if s2 == 10:
+                        iii = 0
+                ii += 1
+                if ii == 10:
                     notif(status())
                     insert_db(timestamp, status(), tinggi())
                     insert_server(timestamp, full, jam, tinggi(), status())
@@ -210,7 +211,7 @@ if __name__ == "__main__":
                         temp = data["{}".format(full)]
                         temp.append(report)
                     write_json(data)
-                    s2 = 0
+                    ii = 0
             elif (GPIO.input(12) == False):
                 if (GPIO.input(10) == True):
                     notif(status())
@@ -221,7 +222,7 @@ if __name__ == "__main__":
                         temp = data["{}".format(full)]
                         temp.append(report)
                     write_json(data)
-                    s3 = 0
+                    iii = 0
                     while (GPIO.input(16) == False):
                         netral()
                         sleep(1)
@@ -235,11 +236,9 @@ if __name__ == "__main__":
                             break
 
             if (re.compile(r"00:00:0\d").search(jam)):
-                s1 = 0
-                s2 = 0
-                s3 = 0
-            i = s1
-            ii = s2
-            iii = s3
+                i = 0
+                ii = 0
+                iii = 0
+
         sleep(1)
         os.system("clear")

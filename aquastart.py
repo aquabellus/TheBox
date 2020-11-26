@@ -3,7 +3,7 @@ import datetime, os, json, getpass, re, math, random, pandas, logging
 from time import sleep
 from urllib import request
 
-logging.basicConfig(filename='log/aqualog.log', filemode='a', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
+logging.basicConfig(filename='log/aqualog.log', filemode='a', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.WARNING)
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
@@ -133,46 +133,42 @@ def insert_server(timestamp, tanggal, waktu, ketinggian, status):
     sT = re.sub(r"[ ]", "+", status)
     st = re.sub(r"[/]", "%2F", sT)
     tg = re.sub(r"[/]", "%2F", ketinggian)
-    request.urlopen("http://10.30.1.247/proses.php?Timestamp={}&Tanggal={}&Waktu={}&Ketinggian={}&Status={}".format(timestamp, tt, wk, tg, st))
+    request.urlopen("http://10.30.1.247/proses.php?Timestamp={}&Tanggal={}&Waktu={}&Ketinggian={}+M&Status={}".format(timestamp, tt, wk, tg, st))
+    print("Data telah terkirim ke database")
+    sleep(1)
 
 s1 = int()
 s2 = int()
 s3 = int()
 
-path = os.path.dirname(os.path.realpath(__file__))
-
 if __name__ == "__main__":
     from aquabot import notif, alert, pressed, check, minute_count
     from aquasetup import insert_db
     while True:
-        pid = str(os.getpid())
-        pidfile = "{}/helper/aquastart.pid".format(path)
         thn = datetime.datetime.now().strftime("%Y-%m")
         tgl = datetime.datetime.now().strftime("%d")
         jam = datetime.datetime.now().strftime("%H:%M:%S")
         full = datetime.datetime.now().strftime("%Y/%m/%d")
         timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+        str_tinggi = tinggi()
+        str_status = status()
         report = {
             "Timestamp" : timestamp,
-            "Status" : status(),
-            "Tinggi" : tinggi(),
+            "Status" : str_status,
+            "Tinggi" : str_tinggi,
             "Jam" : jam
         }   
 
         try:
             cek()
-        except:
-            logging.debug('This will get logged to a file')
-        finally:
             netral()
-            open(pidfile, 'w').write(pid)
             if (GPIO.input(8) == False):
                 if (GPIO.input(10) == False):
                     s2 += 1
                     if s2 == 10:
-                        notif(status())
-                        insert_db(timestamp, status(), tinggi())
-                        insert_server(timestamp, full, jam, tinggi(), status())
+                        notif(str_status)
+                        insert_db(timestamp, str_status, str_tinggi)
+                        insert_server(timestamp, full, jam, str_tinggi, str_status)
                         with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
                             data = json.load(json_file)
                             temp = data["{}".format(full)]
@@ -181,9 +177,9 @@ if __name__ == "__main__":
                         s2 = 0
                 s1 += 1
                 if s1 == 20:
-                    notif(status())
-                    insert_db(timestamp, status(), tinggi())
-                    insert_server(timestamp, full, jam, tinggi(), status())
+                    notif(str_status)
+                    insert_db(timestamp, str_status, str_tinggi)
+                    insert_server(timestamp, full, jam, str_tinggi, str_status)
                     with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
                         data = json.load(json_file)
                         temp = data["{}".format(full)]
@@ -194,9 +190,9 @@ if __name__ == "__main__":
                 if (GPIO.input(12) == False):
                     s3 += 1
                     if s3 == 5:
-                        notif(status())
-                        insert_db(timestamp, status(), tinggi())
-                        insert_server(timestamp, full, jam, tinggi(), status())
+                        notif(str_status)
+                        insert_db(timestamp, str_status, str_tinggi)
+                        insert_server(timestamp, full, jam, str_tinggi, str_status)
                         with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
                             data = json.load(json_file)
                             temp = data["{}".format(full)]
@@ -205,9 +201,9 @@ if __name__ == "__main__":
                         s3 = 0
                 s2 += 1
                 if s2 == 10:
-                    notif(status())
-                    insert_db(timestamp, status(), tinggi())
-                    insert_server(timestamp, full, jam, tinggi(), status())
+                    notif(str_status)
+                    insert_db(timestamp, str_status, str_tinggi)
+                    insert_server(timestamp, full, jam, str_tinggi, str_status)
                     with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
                         data = json.load(json_file)
                         temp = data["{}".format(full)]
@@ -216,9 +212,9 @@ if __name__ == "__main__":
                     s2 = 0
             elif (GPIO.input(12) == False):
                 if (GPIO.input(10) == True):
-                    notif(status())
-                    insert_db(timestamp, status(), tinggi())
-                    insert_server(timestamp, full, jam, tinggi(), status())
+                    notif(str_status)
+                    insert_db(timestamp, str_status, str_tinggi)
+                    insert_server(timestamp, full, jam, str_tinggi, str_status)
                     with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
                         data = json.load(json_file)
                         temp = data["{}".format(full)]
@@ -259,6 +255,8 @@ if __name__ == "__main__":
             print("Siaga I : {}".format(s1))
             print("Siaga II : {}".format(s2))
             print("Bahaya : {}".format(s3))
-
-        sleep(1)
-        os.system("clear")
+        except:
+            logging.warning("This will get logged to a file")
+        finally:
+            sleep(1)
+            os.system("clear")

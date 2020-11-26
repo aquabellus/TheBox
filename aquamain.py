@@ -71,6 +71,7 @@ if __name__ == "__main__":
                 print("Bot Akan Dimulai Ulang Pada Menit Ke {}".format(b))
         else:
             print("Bot Telegram Terdeteksi")
+            b = 0
         print("")
         if check() == False:
             print("Trigger Script Tidak Terdeteksi")

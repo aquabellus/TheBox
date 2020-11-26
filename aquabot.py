@@ -277,17 +277,18 @@ def button(update: Update , context: CallbackContext) -> None:
     elif query.data == "tentu":
         query.edit_message_text("Menghentikan Script ...")
         if check() == True:
-            a = os.popen("ps ax | grep aquastart.py | grep -v grep").read()
-            b = a.split()
-            pid = a[0]
-            try:
-                os.kill(int(pid), signal.SIGKILL)
-                sleep(1)
-            finally:
-                if check() == False:
-                    context.bot.send_message(update.effective_message.chat.id, "Script Berhasil Dihentikan")
-                else:
-                    context.bot.send_message(update.effective_message.chat.id, "Gagal Menghentikan Script")
+            if os.path.exists("helper/aquastart.pid"):
+                try:
+                    os.system("kill {}".format(open("helper/aquastart.pid").read()))
+                    sleep(1)
+                finally:
+                    if check() == False:
+                        context.bot.send_message(update.effective_message.chat.id, "Script Berhasil Dihentikan")
+                    else:
+                        context.bot.send_message(update.effective_message.chat.id, "Gagal Menghentikan Script")
+            else:
+                pesan = "File Daemon Tidak Ditemukan\nGagal Menghentikan Script"
+                context.bot.send_message(update.effective_message.chat.id, pesan, parse_mode="HTML")
         else:
             context.bot.send_message(update.effective_message.chat.id, "Script Sudah Berhenti.")
 
@@ -337,11 +338,11 @@ def minute_count():
 
 text_handler = MessageHandler(Filters.text, text)
 dispatcher.add_handler(CommandHandler("setup", setup))
+dispatcher.add_handler(CommandHandler("clear", clear))
+dispatcher.add_handler(CommandHandler("getlog", getlog))
 dispatcher.add_handler(CommandHandler("log", log))
 dispatcher.add_handler(CommandHandler("status", status))
 dispatcher.add_handler(CommandHandler("reboot", reboot))
-dispatcher.add_handler(CommandHandler("clear", clear))
-dispatcher.add_handler(CommandHandler("getlog", getlog))
 command_handler = MessageHandler(Filters.command, command)
 dispatcher.add_handler(CallbackQueryHandler(button))
 dispatcher.add_handler(command_handler)

@@ -167,6 +167,13 @@ def log(update = Update, context = CallbackContext):
         pesan = "Log tidak ditemukan"
     update.message.reply_text(pesan)
 
+def getlog(update = Update, context = CallbackContext):
+    if os.path.exists("log/aqualog.log"):
+        logfile = open("log/aqualog.log", "rb")
+        context.bot.send_document(update.effective_message.chat.id, document=logfile)
+    else:
+        update.message.reply_text("Log tidak ditemukan")
+
 def status(update = Update, context = CallbackContext):
     keyboard = [
         [
@@ -333,6 +340,8 @@ dispatcher.add_handler(CommandHandler("setup", setup))
 dispatcher.add_handler(CommandHandler("log", log))
 dispatcher.add_handler(CommandHandler("status", status))
 dispatcher.add_handler(CommandHandler("reboot", reboot))
+dispatcher.add_handler(CommandHandler("clear", clear))
+dispatcher.add_handler(CommandHandler("getlog", getlog))
 command_handler = MessageHandler(Filters.command, command)
 dispatcher.add_handler(CallbackQueryHandler(button))
 dispatcher.add_handler(command_handler)

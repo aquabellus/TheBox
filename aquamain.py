@@ -6,7 +6,7 @@ if os.path.exists("helper/") == False:
     os.mkdir("helper/")
 
 from aquabot import check, minute_count, notif
-from aquastart import cek, nama, validatejson
+from aquastart import cek, nama
 
 logging.basicConfig(filename='log/aqualog.log', filemode='a', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.WARNING)
 

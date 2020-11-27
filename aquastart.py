@@ -68,31 +68,7 @@ def cek():
                 with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,tgl), "w") as outfile:
                     outfile.write(json_object)
 
-def validatejson():
-    tgl = datetime.datetime.now().strftime("%d")
-    thn = datetime.datetime.now().strftime("%Y-%m")
-    file_json = open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl))
-    data = json.loads(file_json.read())
-    saring = re.sub("[^0-9/]", "", str(data))
-    try:
-        json.loads(open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)).read())
-    except:
-        os.remove("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl))
-        cek()
-        return(False)
-    if (re.search(r"\d+\/\d+\/" + tgl, saring)):
-        dummy = "dummy"
-    else:
-        with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
-            data = json.load(json_file)
-            data.clear()
-            data.update(tmprpt)
-        with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
-            json.dump(data, json_file, indent=4)
-    return(True)
-
 cek()
-validatejson()
 
 def write_json(data, filename=("/home/{}/Documents/BoxDump.d/{}/{}.json".format(getpass.getuser(), datetime.datetime.now().strftime("%Y-%m"), datetime.datetime.now().strftime("%d")))):
     with open(filename, 'w') as jswrt:
@@ -238,10 +214,6 @@ if __name__ == "__main__":
                 s2 = 0
                 s3 = 0
 
-            if validatejson() == True:
-                jsonStatus = "Correct"
-            else:
-                jsonStatus = "Incorrect"
             print("#########################")
             print("")
             print("   Monitoring Script")
@@ -249,8 +221,6 @@ if __name__ == "__main__":
             print("")
             print("#########################")
             print("\n"*1)
-            print("Status file json : {}".format(jsonStatus))
-            print("")
             print("Hasil :")
             print("Siaga I : {}".format(s1))
             print("Siaga II : {}".format(s2))

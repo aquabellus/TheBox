@@ -1,8 +1,6 @@
 language: python
 
 python:
-  - "3.6"
-  - "3.7"
   - "3.8"
   - "3.9"
   - "3.8-dev"
@@ -15,6 +13,7 @@ install:
 script:
   - python3 aquacheck.py
   - coverage run aquacheck.py
+  - coverage run aquamain.py
 
 after_success:
   - codecov

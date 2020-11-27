@@ -263,7 +263,7 @@ def button(update: Update , context: CallbackContext) -> None:
         ]
         inline_markup = InlineKeyboardMarkup(keyboard)
         query.edit_message_text("Kamu serius ?", reply_markup=inline_markup)
-        
+
     elif query.data == "reboot":
         query.edit_message_text("Rebooting bot ...")
         a = os.popen("ps ax | grep aquabot.py | grep -v grep").read()

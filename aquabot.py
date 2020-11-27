@@ -1,7 +1,7 @@
-import telegram, datetime, telegram.ext, logging, random, psutil, os, subprocess, re, pandas, signal
+import telegram, datetime, logging, random, psutil, os, re, pandas, signal
 import getpass, json
-from telegram import ReplyKeyboardMarkup, Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import CommandHandler, Filters, MessageHandler, CallbackQueryHandler, CallbackContext, Updater
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import CommandHandler, Filters, MessageHandler, CallbackQueryHandler, CallbackContext
 from time import sleep
 
 logging.basicConfig(filename='log/aqualog.log', filemode='a', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.WARNING)
@@ -189,7 +189,7 @@ def status(update = Update, context = CallbackContext):
         update.message.reply_text(pesan, parse_mode="HTML", reply_markup=inline_markup)
     else:
         update.message.reply_text("Script Sudah Berjalan", parse_mode="HTML", reply_markup=inline_markup)
-        
+
 def notif(status):
     now = datetime.datetime.now()
     jam = str(now.hour) + ":" + str(now.minute) + ":" + str(now.second)

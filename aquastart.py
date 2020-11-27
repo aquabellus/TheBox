@@ -1,5 +1,5 @@
 import RPi.GPIO as GPIO
-import datetime, os, json, getpass, re, math, random, pandas, logging
+import datetime, os, json, getpass, re, random, pandas, logging
 from time import sleep
 from urllib import request
 
@@ -118,7 +118,7 @@ s2 = int()
 s3 = int()
 
 if __name__ == "__main__":
-    from aquabot import notif, alert, pressed, check, minute_count
+    from aquabot import notif, alert, pressed, minute_count
     from aquasetup import insert_db
     while True:
         thn = datetime.datetime.now().strftime("%Y-%m")
@@ -133,7 +133,7 @@ if __name__ == "__main__":
             "Status" : str_status,
             "Tinggi" : str_tinggi,
             "Jam" : jam
-        }   
+        }
 
         try:
             cek()

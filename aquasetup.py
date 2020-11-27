@@ -1,4 +1,4 @@
-import mysql.connector, json, datetime, logging, os
+import mysql.connector, json, datetime, logging
 from time import sleep
 
 logging.basicConfig(filename='log/aqualog.log', filemode='a', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.WARNING)

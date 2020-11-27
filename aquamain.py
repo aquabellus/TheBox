@@ -1,4 +1,4 @@
-import os, datetime, time,re, psutil, logging
+import os, datetime, time, re, logging
 
 if os.path.exists("log/") == False:
     os.mkdir("log/")
@@ -6,7 +6,7 @@ if os.path.exists("helper/") == False:
     os.mkdir("helper/")
 
 from aquabot import check, minute_count, notif
-from aquastart import cek, nama
+from aquastart import nama
 
 logging.basicConfig(filename='log/aqualog.log', filemode='a', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.WARNING)
 

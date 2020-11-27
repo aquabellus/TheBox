@@ -99,7 +99,7 @@ def command(update = Update, context = CallbackContext) -> None:
     elif command == "/id":
         pesan = "Hai {}\nSelamat {}\n\nChat ID kamu adalah : {}".format(username, greet(), chat_id)
         if chat_type == "private":
-            """DOES NOTHING"""
+            pesan += "\nAku juga bisa kok nampilin Chat ID grup kamu. 😊"
         elif chat_type == "supergroup":
             pesan += "\nChat ID grup ini adalah : {}".format(update.effective_message.chat.id)
         else:

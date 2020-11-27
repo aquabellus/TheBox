@@ -1,5 +1,5 @@
 import RPi.GPIO as GPIO
-import datetime, os, json, getpass, re, pandas, logging
+import datetime, os, json, getpass, re, logging
 from time import sleep
 from urllib import request
 

@@ -18,9 +18,6 @@
 
 </details>
 
-## Documentation
-We Are Currently Writing [Documentation](https://aquabellus.gitbook.io/aqua-bellus/) Here.
-
 ## Files Scheme
     PLEASE FOLLOW THIS SCHEME TO AVOID SOME ISSUE
     
@@ -29,19 +26,17 @@ We Are Currently Writing [Documentation](https://aquabellus.gitbook.io/aqua-bell
         |--The-Box
             |--/../
             |--log/
-            |--helper/
-            |--src/
+            |--aquamain.py
             |--aquabot.py
             |--aquasetup.py
             |--aquastart.py
             |--setup.json
-            |--setup.sh
             |--..
             
     *BoxDump.d will automatically generated when you run aquastart.py
 
-## Requirements
-Need python-devel to install requirements.
+## Documentation and Requirements
+Read our [wiki](https://github.com/aquabellus/The-Box/wiki) for more details.
 
 ## Credits
 - [dickymuliafiqri](https://github.com/Dicky-MF) for write and maintenance this software.

@@ -1,10 +1,16 @@
 # Alpha Build #
 
+### 27/11/2020
+- Perbaikan check pid
+- Optimalisasi web server
+- Menghapus fitur edit dan hapus log pada web server (Security Reason)
+
 ### 26/11/2020
 - Merubah mode repo dari pribadi ke publik
 - Merubah skema logging script
 - Perbaikan pada metode kill
 - Perbaikan input data ke database
+- Menambahkan fitur edit dan hapus log pada web server
 
 ### 25/11/2020
 - Perbaikan integrasi antara bot dengan "Database Server"

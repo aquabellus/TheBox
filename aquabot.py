@@ -1,5 +1,6 @@
-import telegram, datetime, logging, random, psutil, os, re, pandas, signal
+import telegram, datetime, logging, psutil, os, re, pandas, signal
 import getpass, json
+from numpy import random
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CommandHandler, Filters, MessageHandler, CallbackQueryHandler, CallbackContext
 from time import sleep
@@ -34,7 +35,7 @@ def text(update, context):
         "Entschuldigung, Aqua ist kein interaktiver Bot.",
         "Извините, Aqua не интерактивный бот."
     ]
-    context.bot.send_message(update.effective_message.chat.id, text=jawaban[random.randrange(len(jawaban))])
+    context.bot.send_message(update.effective_message.chat.id, text=jawaban[int(random.randint(0, len(jawaban)))])
 
 def command(update = Update, context = CallbackContext) -> None:
     now = datetime.datetime.now()
@@ -71,9 +72,9 @@ def command(update = Update, context = CallbackContext) -> None:
             "Hadiiirrrr 😵️"
         ]
         if (re.compile(r"2\d:\d\d:\d\d").search(jam)):
-            context.bot.send_message(update.effective_message.chat.id, jawaban + pesan_khusus[random.randrange(len(pesan_khusus))], parse_mode="HTML")
+            context.bot.send_message(update.effective_message.chat.id, jawaban + pesan_khusus[int(random.randint(0, len(pesan_khusus)))], parse_mode="HTML")
         else:
-            context.bot.send_message(update.effective_message.chat.id, jawaban + pesan[random.randrange(len(pesan))], parse_mode="HTML")
+            context.bot.send_message(update.effective_message.chat.id, jawaban + pesan[int(random.randint(0, len(pesan)))], parse_mode="HTML")
 
     elif command == "/last":
         pesan = "<b>{}</b>\n\n".format(full)
@@ -203,7 +204,7 @@ def notif(status):
     if status == "mati":
         Aqua.sendMessage(json_setup["chatid"], "Script Tidak Berjalan, Terdeteksi pada pukul {}".format(jam), parse_mode="HTML")
     else:
-        Aqua.sendMessage(json_setup["chatid"], pesan[random.randrange(len(pesan))], parse_mode="HTML")
+        Aqua.sendMessage(json_setup["chatid"], pesan[int(random.randint(0, len(pesan)))], parse_mode="HTML")
 
 def ready():
     Aqua = telegram.Bot(json_setup["token"])
@@ -216,7 +217,7 @@ def alert():
         "Bahayaaa, Mohon Segera Cek TKP-nya Kakak !!!",
         "Ayo Segera Cek Kakak"
     ]
-    Aqua.sendMessage(json_setup["chatid"], pesan[random.randrange(len(pesan))])
+    Aqua.sendMessage(json_setup["chatid"], pesan[int(random.randint(0, len(pesan)))])
 
 def pressed():
     Aqua = telegram.Bot(json_setup["token"])
@@ -225,7 +226,7 @@ def pressed():
         "Notifikasi telah dimatikan kakak",
         "Terimakasih atas bantuannya XD"
     ]
-    Aqua.sendMessage(json_setup["chatid"], pesan[random.randrange(len(pesan))])
+    Aqua.sendMessage(json_setup["chatid"], pesan[int(random.randint(0, len(pesan)))])
 
 def check():
     for process in psutil.process_iter():
@@ -320,7 +321,7 @@ def button(update: Update , context: CallbackContext) -> None:
             "Nyusahin aja",
             "Sabar, gaboleh ngatain 😊"
         ]
-        query.edit_message_text(pesan[random.randrange(len(pesan))])
+        query.edit_message_text(pesan[int(random.randint(0, len(pesan)))])
 
 def minute_count():
     a = datetime.datetime.now().strftime("%M")

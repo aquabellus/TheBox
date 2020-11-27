@@ -13,8 +13,12 @@ jobs:
       - python/save-cache
       - run:
           command: |
+            pip3 install coverage
             pip3 install -r ./requirements.txt
             python3 aquacheck.py test
+            coverage run aquacheck.py
+            coverage report -m
+            coverage html
           name: Aqua Service Check
 
 workflows:

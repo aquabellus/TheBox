@@ -1,6 +1,7 @@
 # The Box
 <img width="250" height="250" src=/assests/Logo.png>
 
+[![codecov](https://codecov.io/gh/aquabellus/The-Box/branch/master/graph/badge.svg?token=1SZNUZVRH9)](https://codecov.io/gh/aquabellus/The-Box)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/79f5e4b98b8b4ebf9c2fefbc74982355)](https://app.codacy.com/gh/aquabellus/The-Box?utm_source=github.com&utm_medium=referral&utm_content=aquabellus/The-Box&utm_campaign=Badge_Grade)
 [![Build Status](https://travis-ci.com/aquabellus/The-Box.svg?token=j9yvFkydydnFaRfy8yoE&branch=master)](https://travis-ci.com/aquabellus/The-Box)
 [![CircleCI](https://circleci.com/gh/aquabellus/The-Box.svg?style=shield)](https://circleci.com/gh/aquabellus/The-Box)

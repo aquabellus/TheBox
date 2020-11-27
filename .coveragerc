@@ -2,6 +2,6 @@
 branch = True
 
 [report]
-ignore_errors = False
+ignore_errors = True
 omit =
     tests/*

@@ -13,7 +13,7 @@ logging.basicConfig(filename='log/aqualog.log', filemode='a', format='%(asctime)
 def check_bot():
     get_process = os.popen("ps ax | grep aquabot.py | grep -v grep").read()
     try:
-        pid = re.search(r"\d+", get_process)
+        pid = re.search(r"\d+", get_process).group()
     except:
         return(False)
     return(pid)

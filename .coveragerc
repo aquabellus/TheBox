@@ -1,6 +1,6 @@
 [run]
 branch = True
-source = aquacheck
+source = /
 
 [report]
 ignore_errors = False

@@ -13,7 +13,7 @@ install:
 script:
   - python3 aquacheck.py
   - coverage run aquacheck.py
-  - coverage run aquamain.py
+  - coverage run setup.sh
 
 after_success:
   - codecov

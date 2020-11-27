@@ -14,14 +14,6 @@ template = {
     "B" : "DANGER HEIGHT"
 }
 
-configuration = {
-    "host" : "YOUR HOST",
-    "user" : "YOUR USERNAME",
-    "passwd" : "YOUR PASSWORD",
-    "token" : "YOUR TOKEN",
-    "chatid" : "YOUR CHAT ID"
-}
-
 ambil = json.dumps(template, indent=4)
 
 def check_json():
@@ -67,6 +59,4 @@ print("")
 print("")
 baca = json.loads(open("./setup.json").read())
 print("Bot Status : {}".format(check_bot()))
-# print("Database Status : {}".format(check_database()))
-
-mysql.connector.connect( host=baca["host"], user=baca["user"], passwd=baca["passwd"] )
+print("Database Status : {}".format(check_database()))

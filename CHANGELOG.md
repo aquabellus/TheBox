@@ -1,6 +1,7 @@
 # Alpha Build #
 
 ### 27/11/2020
+- Pembuatan wiki
 - Perbaikan check pid
 - Optimalisasi web server
 - Menghapus fitur edit dan hapus log pada web server (Security Reason)

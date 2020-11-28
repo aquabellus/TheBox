@@ -54,25 +54,18 @@ nama = getpass.getuser()
 def cek():
     thn = datetime.datetime.now().strftime("%Y-%m")
     tgl = datetime.datetime.now().strftime("%d")
-    if os.path.exists("/home/{}/Documents/BoxDump.d".format(nama)) == False:
-        os.makedirs("/home/{}/Documents/BoxDump.d/{}".format(nama,thn))
-        with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,tgl), "w") as outfile:
+    os.makedirs("/home/{}/Documents/BoxDump.d/{}".format(nama, thn), exist_ok=True)
+    file = "/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)
+    if os.path.exists(file) == False:
+        with open(file, "w") as outfile:
             outfile.write(json_object)
     else:
-        if os.path.exists("/home/{}/Documents/BoxDump.d/{}".format(nama,thn)) == False:
-            os.makedirs("/home/{}/Documents/BoxDump.d/{}".format(nama,thn))
-            with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,tgl), "w") as outfile:
-                outfile.write(json_object)
-        else:
-            if os.path.exists("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,tgl)) == False:
-                with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,tgl), "w") as outfile:
-                    outfile.write(json_object)
-    try:
-        with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as baca:
-            a = baca.read()
-            re.search(r"\d+\/\d+\/" + str(tgl), a).group()
-    except:
-        os.system("rm -rf /home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl))
+        try:
+            with open(file) as baca:
+                a = baca.read()
+                re.search(r"\d+\/\d+\/" + str(tgl), a).group()
+        except:
+            os.system("rm -rf {}".format(file))
 
 for _ in range(2):
     cek()

@@ -1,6 +1,6 @@
 [run]
 branch = True
-source = TheBox/
+source = aquacheck
 
 [report]
 ignore_errors = True

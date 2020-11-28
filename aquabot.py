@@ -340,13 +340,19 @@ def button(update: Update , context: CallbackContext) -> None:
         if os.path.exists("aquamain.py"):
             if check_aquamain() == False:
                 try:
-                    os.popen("lxterminal -e python3 aquamain.py")
+                    os.system("lxterminal -e python3 aquamain.py")
                     sleep(1)
                 except:
                     query.edit_message_text("Gagal memulai ulang")
                 query.edit_message_text("Berhasil memulai ulang")
             else:
-                query.edit_message_text("aquamain sudah berjalan")
+                os.system("kill {}".format(int(check_aquamain())))
+                sleep(1)
+                os.system("lxterminal -e python3 aquamain.py")
+                if check_aquamain() == False:
+                    query.edit_message_text("Gagal memulai ulang")
+                else:
+                    query.edit_message_text("aquamain sudah berjalan")
         else:
             query.edit_message_text("File tidak ditemukan")
 

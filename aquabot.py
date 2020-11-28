@@ -177,7 +177,7 @@ def log(update = Update, context = CallbackContext):
         pesan = open("log/aqualog.log").read()
     else:
         pesan = "Log tidak ditemukan"
-    update.message.reply_text(jawaban + pesan, parse_mode="HTML")
+    update.message.reply_text(jawaban + pesan)
 
 def getlog(update = Update, context = CallbackContext):
     if os.path.exists("log/aqualog.log"):

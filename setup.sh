@@ -1,3 +1,3 @@
 sudo rm -rf /bin/aquabox
-sudo cp ./src/aquabox /bin/
+sudo cp ./utils/aquabox /bin/
 sudo chmod +x /bin/aquabox

@@ -1,0 +1,2 @@
+cd /home/$(whoami)/Documents/TheBox
+export DISPLAY=:0.0; python3 /home/$(whoami)/Documents/TheBox/aquamain.py &>/dev/null &

@@ -1,4 +1,0 @@
-export DISPLAY=:0.0
-echo python3 aquamain.py > /home/$(whoami)/Documents/TheBox/start
-sudo chmod +x /home/$(whoami)/Documents/TheBox/start
-lxterminal -e /home/$(whoami)/Documents/TheBox/start

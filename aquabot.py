@@ -128,6 +128,16 @@ def clear(update = Update, context = CallbackContext):
     sleep(1)
     context.bot.send_message(update.effective_message.chat.id, jawaban)
 
+def aquamain(update = Update, context = CallbackContext):
+    get_process = os.popen("ps ax | grep aquamain.py | grep -v grep").read()
+    try:
+        re.search(r"\d+", get_process).group()
+    except:
+        status = "Proses tidak ditemukan / Mati"
+    status = "Proses ditemukan"
+    pesan = "<code>///aquamain.py///</code>\n\nStatus : {}".format(status)
+    update.message.reply_text(pesan, parse_mode="HTML")
+
 def reboot(update = Update, context = CallbackContext):
     keyboard = [
         [
@@ -332,6 +342,7 @@ def minute_count():
 
 text_handler = MessageHandler(Filters.text, text)
 dispatcher.add_handler(CommandHandler("setup", setup))
+dispatcher.add_handler(CommandHandler("aquamain", aquamain))
 dispatcher.add_handler(CommandHandler("clear", clear))
 dispatcher.add_handler(CommandHandler("getlog", getlog))
 dispatcher.add_handler(CommandHandler("log", log))

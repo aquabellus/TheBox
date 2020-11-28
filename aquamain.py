@@ -27,7 +27,7 @@ def bot_try():
 
 def main():
     a = 0
-    b = bot_try()
+    b = 0
     while True:
         if os.path.exists("log/aqualog.log") == False:
             open("log/aqualog.log", "w+")

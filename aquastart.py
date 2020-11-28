@@ -67,8 +67,15 @@ def cek():
             if os.path.exists("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,tgl)) == False:
                 with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama,thn,tgl), "w") as outfile:
                     outfile.write(json_object)
+    try:
+        with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as baca:
+            a = baca.read()
+            re.search(r"\d+\/\d+\/" + str(tgl), a).group()
+    except:
+        os.system("rm -rf /home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl))
 
-cek()
+for _ in range(2):
+    cek()
 
 def write_json(data, filename=("/home/{}/Documents/BoxDump.d/{}/{}.json".format(getpass.getuser(), datetime.datetime.now().strftime("%Y-%m"), datetime.datetime.now().strftime("%d")))):
     with open(filename, 'w') as jswrt:

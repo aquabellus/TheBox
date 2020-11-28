@@ -9,7 +9,7 @@
 [![CircleCI](https://img.shields.io/circleci/build/github/aquabellus/TheBox/master?label=circleci&logo=circleci)](https://circleci.com/gh/aquabellus/TheBox)
 ![License](https://img.shields.io/github/license/aquabellus/TheBox)
 ![Repo Size](https://img.shields.io/github/repo-size/aquabellus/TheBox?logo=size)
-[![Telegram](https://img.shields.io/badge/telegram-Aqua-blue)](t.me/aquabellusBot)
+[![Telegram](https://img.shields.io/badge/telegram-Aqua-blue)](https://t.me/aquabellusBot)
 
 ## Concept
 <details>
@@ -47,3 +47,4 @@ Read our [wiki](https://github.com/aquabellus/TheBox/wiki) for more details.
 - [dickymuliafiqri](https://github.com/Dicky-MF) for write and maintenance this software.
 - [pudidi](https://github.com/pudidi) for write and maintenance this software.
 - [yutolx12](https://github.com/yutolx12) for write and maintenance this software.
+- [python-telegram-bot](https://github.com/python-telegram-bot/python-telegram-bot) for telegram bot library.

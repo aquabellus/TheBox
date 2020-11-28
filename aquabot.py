@@ -78,7 +78,7 @@ def command(update = Update, context = CallbackContext) -> None:
         pesan += "Aku dibuat untuk membantu kalian semua, dalam pengoprasian produk-produk aquabellus\n"
         pesan += "Berikut adalah list perintah yang bisa aku kerjakan :\n"
         pesan += "<code>/last</code> -> Menampilkan hasil dump terakhir\n"
-        pesan += "<code>/full</code> -> Menampilkan hasil dump secara keseluruhan\n"
+        pesan += "<code>/full</code> -> Mengirimkan hasil dump pada hari ini dalam bentuk file\n"
         pesan += "<code>/id</code> -> Menampilkan Chat ID\n"
         pesan += "<code>/status</code> -> Menampilkan status\n\n"
         pesan += "Untuk informasi lebih lanjut silahkan kunjungi <a href='https://github.com/aquabellus'>tautan ini</a>\n\n"
@@ -86,13 +86,13 @@ def command(update = Update, context = CallbackContext) -> None:
         context.bot.send_message(update.effective_message.chat.id, pesan, parse_mode="HTML")
 
     elif command == "/id":
-        pesan = "Hai {}\nSelamat {}\n\nChat ID kamu adalah : {}".format(username, greet(), chat_id)
+        pesan = "Hai {}\nSelamat {}\n\nChat ID kamu adalah : <code>{}</code>".format(username, greet(), chat_id)
         if chat_type == "private":
             pesan += "\nAku juga bisa kok nampilin Chat ID grup kamu. 😊"
         elif chat_type == "supergroup":
-            pesan += "\nChat ID grup ini adalah : {}".format(update.effective_message.chat.id)
+            pesan += "\nChat ID grup ini adalah : <code>{}</code>".format(update.effective_message.chat.id)
         else:
-            pesan += "\nChat ID {} ini adalah : {}".format(chat_type, update.effective_message.chat.id)
+            pesan += "\nChat ID {} ini adalah : <code>{}</code>".format(chat_type, update.effective_message.chat.id)
         context.bot.send_message(update.effective_message.chat.id, pesan, parse_mode="HTML")
 
     elif command == "/config":
@@ -119,7 +119,7 @@ def last(update = Update, context = CallbackContext):
     hitung = len(cari)
     ambil = urai[re.search(r"\d+\/\d+\/\d+", baca).group()][int(hitung) - 1]
     pesan = "<b>{}</b>\n\n".format(full)
-    pesan += "Timestamp : {}\n".format(ambil["Timestamp"])
+    pesan += "Timestamp : <code>{}</code>\n".format(ambil["Timestamp"])
     pesan += "Status : {}\n".format(ambil["Status"])
     pesan += "Tinggi : {}\n".format(ambil["Tinggi"])
     pesan += "Jam : {}\n".format(ambil["Jam"])

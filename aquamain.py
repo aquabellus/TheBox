@@ -30,7 +30,7 @@ def main():
     b = 0
     while True:
         if os.path.exists("log/aqualog.log") == False:
-            open("log/aqualog.log", "w+")
+            open("log/aqualog.log", "w",)
         minute = datetime.datetime.now().strftime("%M")
         if check() == False:
             if a == 0:

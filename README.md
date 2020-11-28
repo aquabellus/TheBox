@@ -3,8 +3,13 @@
 
 [![codecov](https://codecov.io/gh/aquabellus/TheBox/branch/master/graph/badge.svg?token=1SZNUZVRH9)](https://codecov.io/gh/aquabellus/TheBox)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/9e0893719c944b4b98061f0aec75823d)](https://www.codacy.com/gh/aquabellus/TheBox/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=aquabellus/TheBox&amp;utm_campaign=Badge_Grade)
-[![Build Status](https://travis-ci.com/aquabellus/TheBox.svg?branch=master)](https://travis-ci.com/aquabellus/TheBox)
-[![CircleCI](https://circleci.com/gh/aquabellus/TheBox.svg?style=shield)](https://circleci.com/gh/aquabellus/TheBox)
+![Python Version](https://img.shields.io/pypi/pyversions/python-telegram-bot?color=yellow&logo=python&logoColor=white)
+[![Build Status](https://img.shields.io/travis/com/aquabellus/TheBox?label=travisci&logo=travis)](https://travis-ci.com/aquabellus/TheBox)
+![Github Build](https://img.shields.io/github/workflow/status/aquabellus/TheBox/Python%20package?label=github&logo=github)
+[![CircleCI](https://img.shields.io/circleci/build/github/aquabellus/TheBox/master?label=circleci&logo=circleci)](https://circleci.com/gh/aquabellus/TheBox)
+![License](https://img.shields.io/github/license/aquabellus/TheBox)
+![Repo Size](https://img.shields.io/github/repo-size/aquabellus/TheBox?logo=size)
+[![Telegram](https://img.shields.io/badge/telegram-Aqua-blue)](t.me/aquabellusBot)
 
 ## Concept
 <details>

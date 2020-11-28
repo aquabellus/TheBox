@@ -1,4 +1,4 @@
-import telegram, datetime, logging, psutil, os, re, pandas, signal
+import telegram, datetime, logging, psutil, os, re, signal
 import getpass, json
 from numpy import random
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
@@ -40,10 +40,6 @@ def text(update, context):
 def command(update = Update, context = CallbackContext) -> None:
     now = datetime.datetime.now()
     jam = now.strftime("%H:%M:%S")
-    full = now.strftime("%Y/%m/%d")
-    file_json = open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(getpass.getuser(), datetime.datetime.now().strftime("%Y-%m"), datetime.datetime.now().strftime("%d")))
-    data = json.loads(file_json.read())
-    convert = pandas.DataFrame(data["{}".format(full)])
     command = update.message.text
     chat_type = update.message.chat.type
     username = update.message.from_user.username
@@ -75,14 +71,6 @@ def command(update = Update, context = CallbackContext) -> None:
             context.bot.send_message(update.effective_message.chat.id, jawaban + pesan_khusus[int(random.randint(0, len(pesan_khusus)))], parse_mode="HTML")
         else:
             context.bot.send_message(update.effective_message.chat.id, jawaban + pesan[int(random.randint(0, len(pesan)))], parse_mode="HTML")
-
-    elif command == "/last":
-        pesan = "<b>{}</b>\n\n".format(full)
-        context.bot.send_message(update.effective_message.chat.id, pesan + "{}".format(convert.tail(1)), parse_mode="HTML")
-
-    elif command == "/full":
-        pesan = "<b>{}</b>\n\n".format(full)
-        context.bot.send_message(update.effective_message.chat.id, pesan + "{}".format(convert), parse_mode="HTML")
 
     elif command == "/about":
         pesan = "Aku perkenalan lagi yaa\n"
@@ -118,10 +106,29 @@ def command(update = Update, context = CallbackContext) -> None:
         pesan += "chatid : <code>{}</code>".format(buka["chatid"])
         context.bot.send_message(update.effective_message.chat.id, pesan, "HTML")
 
+def full(update = Update, context = CallbackContext):
+    file_json = open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(getpass.getuser(), datetime.datetime.now().strftime("%Y-%m"), datetime.datetime.now().strftime("%d")), "rb")
+    context.bot.send_document(update.effective_message.chat.id, document=file_json)
+
+def last(update = Update, context = CallbackContext):
+    full = datetime.datetime.now().strftime("%Y/%m/%d")
+    file_json = open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(getpass.getuser(), datetime.datetime.now().strftime("%Y-%m"), datetime.datetime.now().strftime("%d")))
+    baca = file_json.read()
+    urai = json.loads(baca)
+    cari = re.findall(r"\d{10}", baca)
+    hitung = len(cari)
+    ambil = urai[re.search(r"\d+\/\d+\/\d+", baca).group()][int(hitung) - 1]
+    pesan = "<b>{}</b>\n\n".format(full)
+    pesan += "Timestamp : {}\n".format(ambil["Timestamp"])
+    pesan += "Status : {}\n".format(ambil["Status"])
+    pesan += "Tinggi : {}\n".format(ambil["Tinggi"])
+    pesan += "Jam : {}\n".format(ambil["Jam"])
+    update.message.reply_text(pesan, parse_mode="HTML")
+
 def clear(update = Update, context = CallbackContext):
     update.message.reply_text("Membersihkan log ...")
     if os.path.exists("log/aqualog.log"):
-        os.remove("log/aqualog.log")
+        open("log/aqualog.log", "w")
         jawaban = "Log berhasil dibersihkan"
     else:
         jawaban = "File log tidak ditemukan"
@@ -378,6 +385,8 @@ dispatcher.add_handler(CommandHandler("aquamain", aquamain))
 dispatcher.add_handler(CommandHandler("clear", clear))
 dispatcher.add_handler(CommandHandler("getlog", getlog))
 dispatcher.add_handler(CommandHandler("log", log))
+dispatcher.add_handler(CommandHandler("full", full))
+dispatcher.add_handler(CommandHandler("last", last))
 dispatcher.add_handler(CommandHandler("status", status))
 dispatcher.add_handler(CommandHandler("reboot", reboot))
 command_handler = MessageHandler(Filters.command, command)

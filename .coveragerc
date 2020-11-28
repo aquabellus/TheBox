@@ -1,5 +1,6 @@
 [run]
 branch = True
+source = TheBox
 
 [report]
 ignore_errors = True

@@ -129,14 +129,18 @@ def clear(update = Update, context = CallbackContext):
     context.bot.send_message(update.effective_message.chat.id, jawaban)
 
 def aquamain(update = Update, context = CallbackContext):
-    get_process = os.popen("ps ax | grep aquamain.py | grep -v grep").read()
-    try:
-        re.search(r"\d+", get_process).group()
-    except:
-        status = "Proses tidak ditemukan / Mati"
-    status = "Proses ditemukan"
+    keyboard = [
+        [
+            InlineKeyboardButton("Mulai Ulang", callback_data="aquamain")
+        ]
+    ]
+    inline_markup = InlineKeyboardMarkup(keyboard)
+    if check_aquamain() == False:
+        status = "Proses tidak ditemukan"
+    else:
+        status = "Proses ditemukan"
     pesan = "<code>///aquamain.py///</code>\n\nStatus : {}".format(status)
-    update.message.reply_text(pesan, parse_mode="HTML")
+    update.message.reply_text(pesan, parse_mode="HTML", reply_markup=inline_markup)
 
 def reboot(update = Update, context = CallbackContext):
     keyboard = [
@@ -244,6 +248,14 @@ def check():
             return(True)
     return(False)
 
+def check_aquamain():
+    get_pid = os.popen("ps ax | grep aquamain.py | grep -v grep").read()
+    try:
+        pid = re.search(r"\d+", get_pid).group()
+    except:
+        return(False)
+    return(pid)
+
 def button(update: Update , context: CallbackContext) -> None:
     query = update.callback_query
     query.answer()
@@ -323,6 +335,20 @@ def button(update: Update , context: CallbackContext) -> None:
                 query.edit_message_text("Script berhasil dijalankan\nMohon cek log untuk detail lebih lanjut.")
         else:
             query.edit_message_text("File tidak ditemukan !!!")
+
+    elif query.data == "aquamain":
+        if os.path.exists("aquamain.py"):
+            if check_aquamain() == False:
+                try:
+                    os.popen("lxterminal -e python3 aquamain.py")
+                    sleep(1)
+                except:
+                    query.edit_message_text("Gagal memulai ulang")
+                query.edit_message_text("Berhasil memulai ulang")
+            else:
+                query.edit_message_text("aquamain sudah berjalan")
+        else:
+            query.edit_message_text("File tidak ditemukan")
 
     else:
         pesan = [

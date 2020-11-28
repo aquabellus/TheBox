@@ -1,10 +1,10 @@
 # The Box
 <img width="250" height="250" src=/assests/Logo.png>
 
-[![codecov](https://codecov.io/gh/aquabellus/The-Box/branch/master/graph/badge.svg?token=1SZNUZVRH9)](https://codecov.io/gh/aquabellus/The-Box)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/79f5e4b98b8b4ebf9c2fefbc74982355)](https://app.codacy.com/gh/aquabellus/The-Box?utm_source=github.com&utm_medium=referral&utm_content=aquabellus/The-Box&utm_campaign=Badge_Grade)
-[![Build Status](https://travis-ci.com/aquabellus/The-Box.svg?token=j9yvFkydydnFaRfy8yoE&branch=master)](https://travis-ci.com/aquabellus/The-Box)
-[![CircleCI](https://circleci.com/gh/aquabellus/The-Box.svg?style=shield)](https://circleci.com/gh/aquabellus/The-Box)
+[![codecov](https://codecov.io/gh/aquabellus/TheBox/branch/master/graph/badge.svg?token=1SZNUZVRH9)](https://codecov.io/gh/aquabellus/TheBox)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/9e0893719c944b4b98061f0aec75823d)](https://www.codacy.com/gh/aquabellus/TheBox/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=aquabellus/TheBox&amp;utm_campaign=Badge_Grade)
+[![Build Status](https://travis-ci.com/aquabellus/TheBox.svg?branch=master)](https://travis-ci.com/aquabellus/TheBox)
+[![CircleCI](https://circleci.com/gh/aquabellus/TheBox.svg?style=shield)](https://circleci.com/gh/aquabellus/TheBox)
 
 ## Concept
 <details>
@@ -36,7 +36,7 @@
     *BoxDump.d will automatically generated when you run aquastart.py
 
 ## Documentation and Requirements
-Read our [wiki](https://github.com/aquabellus/The-Box/wiki) for more details.
+Read our [wiki](https://github.com/aquabellus/TheBox/wiki) for more details.
 
 ## Credits
 - [dickymuliafiqri](https://github.com/Dicky-MF) for write and maintenance this software.

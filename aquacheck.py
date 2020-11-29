@@ -1,4 +1,4 @@
-import telegram, json, mysql.connector, re
+import telegram, json, mysql.connector, re, time
 
 template = {
     "host" : "YOUR HOST",
@@ -48,6 +48,8 @@ def check_database():
             return("Error")
     return("OK")
 
+a = 10
+
 print("##########################")
 print("#                        #")
 print("#  Aqua Service Checker  #")
@@ -60,3 +62,8 @@ print("")
 baca = json.loads(open("./setup.json").read())
 print("Bot Status : {}".format(check_bot()))
 print("Database Status : {}".format(check_database()))
+print("")
+while a:
+    a -= 1
+    print(f"Pesan ini akan hilang dalam {a}", end="\r")
+    time.sleep(1)

@@ -6,6 +6,7 @@ logging.basicConfig(filename='log/aqualog.log', filemode='a', format='%(asctime)
 
 json_setup = json.loads(open("setup.json").read())
 
+#Fungsi untuk mengisi/menulsi data ke server database lokal
 def insert_db(timestamp, status, tinggi, jam):
     tgl = datetime.datetime.now().strftime("%Y/%m/%d")
     cursor = db.cursor()
@@ -15,6 +16,7 @@ def insert_db(timestamp, status, tinggi, jam):
     db.commit()
     print("Status {} Pukul {} Telah Berhasil Ditambahkan".format(status, jam))
 
+#Fungsi untuk menvalidasi data database lokal
 def validate_db():
     cursor = db.cursor()
     cursor.execute("SELECT * from BoxDump ORDER BY id DESC LIMIT 1")
@@ -25,6 +27,7 @@ def validate_db():
     except:
         return(False)
 
+#Fungsi untuk melakukan sinkronisasi data terakhir pada database lokal
 def sync_db(nama, thn, tgl):
     buka = open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl))
     baca = buka.read()
@@ -38,6 +41,7 @@ def sync_db(nama, thn, tgl):
     except(AttributeError):
         insert_db(ambil["Timestamp"], ambil["Status"], ambil["Tinggi"], ambil["Jam"])
 
+#Fungsi untuk membuat database
 def create_db():
     db = mysql.connector.connect(
     host=json_setup["host"],
@@ -55,6 +59,7 @@ def create_db():
     cursor.execute("CREATE DATABASE {}".format(json_setup["database"]))
     print("Database {} berhasil dibuat".format(json_setup["database"]))
 
+#Fungsi untuk membuat tabel
 def tabel_db():
     print("Membuat Tabel")
     cursor = db.cursor()

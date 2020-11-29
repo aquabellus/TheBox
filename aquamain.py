@@ -10,6 +10,7 @@ from aquastart import nama
 
 logging.basicConfig(filename='log/aqualog.log', filemode='a', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.WARNING)
 
+#Fungsi untuk mengetahui status "aquabot.py"
 def check_bot():
     get_process = os.popen("ps ax | grep aquabot.py | grep -v grep").read()
     try:
@@ -18,6 +19,7 @@ def check_bot():
         return(False)
     return(pid)
 
+#Fungsi untuk melakukan perhitungan jam
 def bot_try():
     now = datetime.datetime.now().strftime("%M")
     b = int(now) + 2
@@ -25,6 +27,7 @@ def bot_try():
         b -= 60
     return(b)
 
+#Fungsi utama
 def main():
     a = 0
     b = 0
@@ -34,8 +37,8 @@ def main():
         minute = datetime.datetime.now().strftime("%M")
         if check() == False:
             if a == 0:
-                notif("mati")
-                a = minute_count()
+                notif("mati")   #Panggil fungsi notif dengan parameter mati
+                a = minute_count()  #Variabel a berisi minute_count
             elif a == int(minute):
                 notif("mati")
                 a = minute_count()
@@ -55,7 +58,7 @@ def main():
             print("Bot Telegram Tidak Terdeteksi")
             if b == 0:
                 print("Mencoba Memulai Ulang ...")
-                os.system("lxterminal -e python3 aquabot.py")
+                os.system("lxterminal -e python3 aquabot.py")   #Jalankan terminal lxterminal dengan perintah yang telah diberikan
                 time.sleep(1)
                 if check_bot() == True:
                     print("Bot Berhasil Dimulai Ulang")

@@ -5,6 +5,7 @@ from urllib import request
 
 logging.basicConfig(filename='log/aqualog.log', filemode='a', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.WARNING)
 
+#Konfigurasi pin GPIO raspberry pi
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
 
@@ -36,6 +37,7 @@ def hijau():
     GPIO.output(5,False)
     GPIO.output(7,True)
 
+#Template yang digunakan untuk menulis file .json
 tmprpt = {
     "{}".format(datetime.datetime.now().strftime("%Y/%m/%d")) : [
         {
@@ -47,10 +49,12 @@ tmprpt = {
     ]
 }
 
+#Penyederhanaan variabel
 json_setup = json.loads(open("setup.json").read())
 json_object = json.dumps(tmprpt, indent = 4)
 nama = getpass.getuser()
 
+#Fungsi untuk melakukan cek file dump
 def cek():
     thn = datetime.datetime.now().strftime("%Y-%m")
     tgl = datetime.datetime.now().strftime("%d")
@@ -63,17 +67,19 @@ def cek():
         try:
             with open(file) as baca:
                 a = baca.read()
-                re.search(r"\d+\/\d+\/" + str(tgl), a).group()
-        except:
-            os.system("rm -rf {}".format(file))
+                re.search(r"\d+\/\d+\/" + str(tgl), a).group()  #Lakukan pencarian dengan pola regex
+        except: #Jika file tidak ditemukan, gagal dibuka, atau pencarian pola regex gagal, maka
+            os.system("rm -rf {}".format(file)) #Hapus file
 
-for _ in range(2):
-    cek()
+for _ in range(2):  #Perulangan dengan hitungan 2
+    cek()   #Panggil fungsi cek
 
+#Fungsi untuk menulis data .json
 def write_json(data, filename=("/home/{}/Documents/BoxDump.d/{}/{}.json".format(getpass.getuser(), datetime.datetime.now().strftime("%Y-%m"), datetime.datetime.now().strftime("%d")))):
     with open(filename, 'w') as jswrt:
         json.dump(data, jswrt, indent = 4)
 
+#Fungsi untuk menentukan status keadaan air
 def status():
     status = str()
     if (GPIO.input(8) == False):
@@ -88,6 +94,7 @@ def status():
         status = str("Bahaya")
     return(status)
 
+#Fungsi untuk menentukan ketinggian air
 def tinggi():
     tinggi = str()
     if (GPIO.input(8) == False):
@@ -102,7 +109,7 @@ def tinggi():
         tinggi = str(json_setup["B"])
     return(tinggi)
 
-
+#Fungsi untuk melakukan koneksi dan menulis data pada server database pusat
 def insert_server(timestamp, tanggal, waktu, ketinggian, status):
     tt = re.sub(r"[/]", "-", tanggal)
     wk = re.sub(r"[:]", "%3A", waktu)

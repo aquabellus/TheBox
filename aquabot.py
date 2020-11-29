@@ -1,19 +1,25 @@
 import telegram, datetime, logging, psutil, os, re, signal
 import getpass, json
 from numpy import random
+#Import module
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CommandHandler, Filters, MessageHandler, CallbackQueryHandler, CallbackContext
 from time import sleep
 
+#Konfigurasi untuk menyimpan log
 logging.basicConfig(filename='log/aqualog.log', filemode='a', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.WARNING)
 
-json_setup = json.loads(open("setup.json").read())
-updater = telegram.ext.Updater(token=json_setup['token'], use_context=True)
-dispatcher = updater.dispatcher
+#Penyerhanaan variabel 
+json_setup = json.loads(open("setup.json").read())  #Membuka dan membaca file .json
+updater = telegram.ext.Updater(token=json_setup['token'], use_context=True) #Set token telegrambot
+dispatcher = updater.dispatcher #Konfigurasi dispatcher
+#Untuk detail lebih lanjut mengenai telegrambot silahkan kunjungi situs resmi telegrambot dan python-for-telegram
 
+#Melakukan pengecekan pada folder ~../log, apabila folder tidak ada maka akan dibuat folder baru
 if os.path.exists("log/") == False:
     os.mkdir("log/")
 
+#Fungsi untuk menentukan sekarang Pagi/Siang/Sore/Malam
 def greet():
     now = datetime.datetime.now()
     jam = now.strftime("%H:%M:%S")
@@ -25,8 +31,8 @@ def greet():
         return("Sore")
     else:
         return("Malam")
-    print(greet())
 
+#Fungsi agar Aqua membalas pesan berupa text
 def text(update, context):
     jawaban = [
         "Maaf, Aqua bukanlah bot interaktif.",
@@ -37,19 +43,21 @@ def text(update, context):
     ]
     context.bot.send_message(update.effective_message.chat.id, text=jawaban[int(random.randint(0, len(jawaban)))])
 
+#Fungsi perintah yang dapat dijalankan oleh Aqua
 def command(update = Update, context = CallbackContext) -> None:
-    now = datetime.datetime.now()
-    jam = now.strftime("%H:%M:%S")
-    command = update.message.text
-    chat_type = update.message.chat.type
-    username = update.message.from_user.username
-    chat_id = update.message.from_user.id
+    now = datetime.datetime.now()   #Variabel untuk menunjukkan date/time sekarang
+    jam = now.strftime("%H:%M:%S")  #Variabel untuk mengambil saat sekarang berdasarkan format yang telah ditentukan
+    command = update.message.text   #Mengambil perintah yang dikirimkan oleh pengguna
+    chat_type = update.message.chat.type    #Mengambil tipe chat
+    username = update.message.from_user.username    #Mengambil username pengguna
+    chat_id = update.message.from_user.id   #Mengambil chat id pengguna
 
-    if command == "/start":
-        pesan = "Hai, aku adalah <b>Aqua</b>\n"
-        pesan += "Bot yang dibuat untuk membantu pengguna sekalian dalam pengoprasian aquabellus\n\n"
+    #Fungsi untuk menangani perintah
+    if command == "/start": #Apabila perintah /start diterima maka lakukan kode dibawah
+        pesan = "Hai, aku adalah <b>Aqua</b>\n" #Penyerhanaan variabel pesan
+        pesan += "Bot yang dibuat untuk membantu pengguna sekalian dalam pengoprasian aquabellus\n\n"   #Menambah variabel pesan
         pesan += "Untuk memanggilku, silahkan kirim perintah <code>/aqua</code>"
-        context.bot.send_message(update.effective_message.chat.id, pesan, parse_mode="HTML")
+        context.bot.send_message(update.effective_message.chat.id, pesan, parse_mode="HTML")    #Mengambil module kirim pesan, kemudian mendapatkan chat id pengguna, kirim pesan dengan variabel pesan, gunakan metode parsing html
 
     elif command == "/aqua":
         jawaban = "Sekarang jam {}\n-------------------------\n\n".format(jam)
@@ -67,9 +75,9 @@ def command(update = Update, context = CallbackContext) -> None:
             "Ngantuk 😭",
             "Hadiiirrrr 😵️"
         ]
-        if (re.compile(r"2\d:\d\d:\d\d").search(jam)):
+        if (re.compile(r"2\d:\d\d:\d\d").search(jam)):  #Menggunakan pola regex untuk mendapatkan value 2n:nn:nn
             context.bot.send_message(update.effective_message.chat.id, jawaban + pesan_khusus[int(random.randint(0, len(pesan_khusus)))], parse_mode="HTML")
-        else:
+        else:   #Apabila hasil diatas tidak ditemukan maka lakukan perintah dibawah
             context.bot.send_message(update.effective_message.chat.id, jawaban + pesan[int(random.randint(0, len(pesan)))], parse_mode="HTML")
 
     elif command == "/about":
@@ -106,10 +114,12 @@ def command(update = Update, context = CallbackContext) -> None:
         pesan += "chatid : <code>{}</code>".format(buka["chatid"])
         context.bot.send_message(update.effective_message.chat.id, pesan, "HTML")
 
+#Fungsi untuk mengirimkan data hasil dump keseluruhan dalam bentuk file
 def full(update = Update, context = CallbackContext):
     file_json = open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(getpass.getuser(), datetime.datetime.now().strftime("%Y-%m"), datetime.datetime.now().strftime("%d")), "rb")
-    context.bot.send_document(update.effective_message.chat.id, document=file_json)
+    context.bot.send_document(update.effective_message.chat.id, document=file_json) #Modul untuk mengirimkan dokumen
 
+#Fungsi untuk mengirimkan data terakhir hasil dump hari ini
 def last(update = Update, context = CallbackContext):
     full = datetime.datetime.now().strftime("%Y/%m/%d")
     file_json = open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(getpass.getuser(), datetime.datetime.now().strftime("%Y-%m"), datetime.datetime.now().strftime("%d")))
@@ -125,6 +135,7 @@ def last(update = Update, context = CallbackContext):
     pesan += "Jam : {}\n".format(ambil["Jam"])
     update.message.reply_text(pesan, parse_mode="HTML")
 
+#Fungsi untuk membersihkan data log
 def clear(update = Update, context = CallbackContext):
     update.message.reply_text("Membersihkan log ...")
     if os.path.exists("log/aqualog.log"):
@@ -135,10 +146,11 @@ def clear(update = Update, context = CallbackContext):
     sleep(1)
     context.bot.send_message(update.effective_message.chat.id, jawaban)
 
+#Fungsi untuk mengetahui status "aquamain.py"
 def aquamain(update = Update, context = CallbackContext):
-    keyboard = [
+    keyboard = [    #Penyederhanaan variabel untuk penggunaan inline_keyboard
         [
-            InlineKeyboardButton("Mulai Ulang", callback_data="aquamain")
+            InlineKeyboardButton("Mulai Ulang", callback_data="aquamain")   #Konfigurasi inline_keyboard dengan pesan "Mulai Ulang", dan callback_data "aquamain"
         ]
     ]
     inline_markup = InlineKeyboardMarkup(keyboard)
@@ -147,8 +159,9 @@ def aquamain(update = Update, context = CallbackContext):
     else:
         status = "Proses ditemukan"
     pesan = "<code>///aquamain.py///</code>\n\nStatus : {}".format(status)
-    update.message.reply_text(pesan, parse_mode="HTML", reply_markup=inline_markup)
+    update.message.reply_text(pesan, parse_mode="HTML", reply_markup=inline_markup) #Menggunakan markup inline_markup
 
+#Fungsi untuk melakukan mulai ulang pada telegrambot
 def reboot(update = Update, context = CallbackContext):
     keyboard = [
         [
@@ -162,6 +175,7 @@ def reboot(update = Update, context = CallbackContext):
     pesan = "Are you sure want to reboot this bot ?"
     update.message.reply_text(pesan, reply_markup=inline_markup)
 
+#Fungsi untuk melakukan konfigurasi database server lokal
 def setup(update = Update, context = CallbackContext):
     keyboard = [
         [
@@ -182,6 +196,7 @@ def setup(update = Update, context = CallbackContext):
     pesan += "Apakah Kamu Yakin Untuk Melanjutkan Perintah Ini ?"
     update.message.reply_text(pesan, parse_mode="HTML", reply_markup=inline_markup)
 
+#Fungsi untuk mengirimkan log
 def log(update = Update, context = CallbackContext):
     if os.path.exists("log/aqualog.log"):
         jawaban = "Ini log nya.... 😊️\n\n"
@@ -190,6 +205,7 @@ def log(update = Update, context = CallbackContext):
         pesan = "Log tidak ditemukan"
     update.message.reply_text(jawaban + pesan)
 
+#Fungsi untuk mengirimkan log dalam bentuk file
 def getlog(update = Update, context = CallbackContext):
     if os.path.exists("log/aqualog.log"):
         logfile = open("log/aqualog.log", "rb")
@@ -197,6 +213,7 @@ def getlog(update = Update, context = CallbackContext):
     else:
         update.message.reply_text("Log tidak ditemukan")
 
+#Fungsi untuk menampilkan status "aquastart.py"
 def status(update = Update, context = CallbackContext):
     keyboard = [
         [
@@ -212,6 +229,7 @@ def status(update = Update, context = CallbackContext):
     else:
         update.message.reply_text("Script Sudah Berjalan", parse_mode="HTML", reply_markup=inline_markup)
 
+#Fungsi untuk mengirimkan notifikasi
 def notif(status):
     now = datetime.datetime.now()
     jam = str(now.hour) + ":" + str(now.minute) + ":" + str(now.second)
@@ -227,10 +245,12 @@ def notif(status):
     else:
         Aqua.sendMessage(json_setup["chatid"], pesan[int(random.randint(0, len(pesan)))], parse_mode="HTML")
 
+#Fungsi untuk mengirimkan pesan "ready" kepada pengguna apabila bot telah siap
 def ready():
     Aqua = telegram.Bot(json_setup["token"])
     Aqua.sendMessage(json_setup["chatid"], "Aqua Ready")
 
+#Fungsi untuk mengirimkan notifikasi peringatan/bahaya kepada pengguna
 def alert():
     Aqua = telegram.Bot(json_setup["token"])
     pesan = [
@@ -240,6 +260,7 @@ def alert():
     ]
     Aqua.sendMessage(json_setup["chatid"], pesan[int(random.randint(0, len(pesan)))])
 
+#Fungsi untuk mengirimkan notifikasi bahwa tombol telah ditekan
 def pressed():
     Aqua = telegram.Bot(json_setup["token"])
     pesan = [
@@ -249,20 +270,23 @@ def pressed():
     ]
     Aqua.sendMessage(json_setup["chatid"], pesan[int(random.randint(0, len(pesan)))])
 
+#Fungsi untuk cek status "aquastart.py"
 def check():
     for process in psutil.process_iter():
-        if process.cmdline() == ['python3', 'aquastart.py']:
-            return(True)
-    return(False)
+        if process.cmdline() == ['python3', 'aquastart.py']:    #Jika proses ditemukan maka lakukan perintah dibawah
+            return(True)    #Kembalikan value menjadi True
+    return(False)   #Apabila proses tidak ditemukan maka kembalikan value menjadi valse
 
+#Fungsi untuk cek status "aquamain.py"
 def check_aquamain():
-    get_pid = os.popen("ps ax | grep aquamain.py | grep -v grep").read()
-    try:
-        pid = re.search(r"\d+", get_pid).group()
-    except:
-        return(False)
-    return(pid)
+    get_pid = os.popen("ps ax | grep aquamain.py | grep -v grep").read()    #Ambil proses "aquamain.py"
+    try:    #Coba jalankan perintah dibawah
+        pid = re.search(r"\d+", get_pid).group()    #Cari Process ID "aquamain.py" menggunakan pola regex
+    except: #Kecuali jika ..., jalankan perintah dibawah
+        return(False)   #Apabila tidak ditemukan maka kembalikan value menjadi False
+    return(pid) #Apabila PID ditemukan maka kembalikan value menjadi pid
 
+#Fungsi untuk menangani callback data
 def button(update: Update , context: CallbackContext) -> None:
     query = update.callback_query
     query.answer()
@@ -372,13 +396,15 @@ def button(update: Update , context: CallbackContext) -> None:
         ]
         query.edit_message_text(pesan[int(random.randint(0, len(pesan)))])
 
+#Fungsi untuk melakukan perhitungan menit 
 def minute_count():
-    a = datetime.datetime.now().strftime("%M")
-    a = int(a) + 15
-    if a >= 60:
-        a -= 60
-    return(a)
+    a = datetime.datetime.now().strftime("%M")  #Peyerhanaan variabel a dengan isi a adalah menit sekarang
+    a = int(a) + 15 #a ditambah 15
+    if a >= 60: #Jika a lebih dari sama dengan 60, maka
+        a -= 60 #a dikurangi 60
+    return(a)   #Kembalikan value menjadi a
 
+#Konfigurasi handler untuk menangani perintah dan callback yang diterima
 text_handler = MessageHandler(Filters.text, text)
 dispatcher.add_handler(CommandHandler("setup", setup))
 dispatcher.add_handler(CommandHandler("aquamain", aquamain))
@@ -394,17 +420,18 @@ dispatcher.add_handler(CallbackQueryHandler(button))
 dispatcher.add_handler(command_handler)
 dispatcher.add_handler(text_handler)
 
+#Jika perintah ini dijalankan secara langsung (bukan dari import), maka 
 if __name__ == "__main__":
-    try:
-        updater.start_polling()
-    except:
-        logging.warning('This will get logged to a file')
-    finally:
-        ready()
+    try:    #Coba jalankan perintah ini
+        updater.start_polling() #Memulai polling pada api telegrambot
+    except: #Kecuali jika..., jalankan perintah dibawah
+        logging.warning('This will get logged to a file')   #Semua log akan disimpan kedalam file
+    finally:    #Akhirnya jalankan perintah dibawah
+        ready() #Jalankan fungsi ready
         print("#########################")
         print("")
         print("   Aqua Telegram Bot")
         print(" dont close this window")
         print("")
         print("#########################")
-        updater.idle()
+        updater.idle()  #Rubah mode telegrambot menjadi idle

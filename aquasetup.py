@@ -93,7 +93,6 @@ if __name__ == "__main__":
             tabel_db()
         except(errors.ProgrammingError):
             print("Tabel sudah tersedia")
-            exit
     except:
         logging.warning('This will get logged to a file')
     else:

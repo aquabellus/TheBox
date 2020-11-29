@@ -56,10 +56,9 @@ nama = getpass.getuser()
 
 #Fungsi untuk melakukan cek file dump
 def cek():
-    thn = datetime.datetime.now().strftime("%Y-%m")
     tgl = datetime.datetime.now().strftime("%d")
-    os.makedirs("/home/{}/Documents/BoxDump.d/{}".format(nama, thn), exist_ok=True)
-    file = "/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)
+    os.makedirs("/home/{}/Documents/BoxDump.d".format(nama), exist_ok=True)
+    file = "/home/{}/Documents/BoxDump.d/BoxDump.json".format(nama)
     if os.path.exists(file) == False:
         with open(file, "w") as outfile:
             outfile.write(json_object)
@@ -75,7 +74,7 @@ for _ in range(2):  #Perulangan dengan hitungan 2
     cek()   #Panggil fungsi cek
 
 #Fungsi untuk menulis data .json
-def write_json(data, filename=("/home/{}/Documents/BoxDump.d/{}/{}.json".format(getpass.getuser(), datetime.datetime.now().strftime("%Y-%m"), datetime.datetime.now().strftime("%d")))):
+def write_json(data, filename=("/home/{}/Documents/BoxDump.d/BoxDump.json".format(getpass.getuser()))):
     with open(filename, 'w') as jswrt:
         json.dump(data, jswrt, indent = 4)
 
@@ -128,8 +127,6 @@ if __name__ == "__main__":
     from aquabot import notif, alert, pressed
     from aquasetup import insert_db, sync_db
     while True:
-        thn = datetime.datetime.now().strftime("%Y-%m")
-        tgl = datetime.datetime.now().strftime("%d")
         jam = datetime.datetime.now().strftime("%H:%M:%S")
         full = datetime.datetime.now().strftime("%Y/%m/%d")
         timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
@@ -152,7 +149,7 @@ if __name__ == "__main__":
                         notif(str_status)
                         insert_db(timestamp, str_status, str_tinggi, jam)
                         insert_server(timestamp, full, jam, str_tinggi, str_status)
-                        with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
+                        with open("/home/{}/Documents/BoxDump.d/BoxDump.json".format(nama)) as json_file:
                             data = json.load(json_file)
                             temp = data["{}".format(full)]
                             temp.append(report)
@@ -163,7 +160,7 @@ if __name__ == "__main__":
                     notif(str_status)
                     insert_db(timestamp, str_status, str_tinggi, jam)
                     insert_server(timestamp, full, jam, str_tinggi, str_status)
-                    with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
+                    with open("/home/{}/Documents/BoxDump.d/BoxDump.json".format(nama)) as json_file:
                         data = json.load(json_file)
                         temp = data["{}".format(full)]
                         temp.append(report)
@@ -176,7 +173,7 @@ if __name__ == "__main__":
                         notif(str_status)
                         insert_db(timestamp, str_status, str_tinggi, jam)
                         insert_server(timestamp, full, jam, str_tinggi, str_status)
-                        with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
+                        with open("/home/{}/Documents/BoxDump.d/BoxDump.json".format(nama)) as json_file:
                             data = json.load(json_file)
                             temp = data["{}".format(full)]
                             temp.append(report)
@@ -187,7 +184,7 @@ if __name__ == "__main__":
                     notif(str_status)
                     insert_db(timestamp, str_status, str_tinggi, jam)
                     insert_server(timestamp, full, jam, str_tinggi, str_status)
-                    with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
+                    with open("/home/{}/Documents/BoxDump.d/BoxDump.json".format(nama)) as json_file:
                         data = json.load(json_file)
                         temp = data["{}".format(full)]
                         temp.append(report)
@@ -198,7 +195,7 @@ if __name__ == "__main__":
                     notif(str_status)
                     insert_db(timestamp, str_status, str_tinggi, jam)
                     insert_server(timestamp, full, jam, str_tinggi, str_status)
-                    with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
+                    with open("/home/{}/Documents/BoxDump.d/BoxDump.json".format(nama)) as json_file:
                         data = json.load(json_file)
                         temp = data["{}".format(full)]
                         temp.append(report)
@@ -217,6 +214,8 @@ if __name__ == "__main__":
                             break
 
             if (re.compile(r"00:00:0\d").search(jam)):
+                for ulang in range(2):
+                    cek()
                 s1 = 0
                 s2 = 0
                 s3 = 0
@@ -232,7 +231,7 @@ if __name__ == "__main__":
             print("Siaga I : {}".format(s1))
             print("Siaga II : {}".format(s2))
             print("Bahaya : {}".format(s3))
-            sync_db(nama, thn, tgl)
+            sync_db(nama)
         except:
             logging.warning("This will get logged to a file")
         finally:

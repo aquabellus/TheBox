@@ -56,7 +56,8 @@ def command(update = Update, context = CallbackContext) -> None:
     if command == "/start": #Apabila perintah /start diterima maka lakukan kode dibawah
         pesan = "Hai, aku adalah <b>Aqua</b>\n" #Penyerhanaan variabel pesan
         pesan += "Bot yang dibuat untuk membantu pengguna sekalian dalam pengoprasian aquabellus\n\n"   #Menambah variabel pesan
-        pesan += "Untuk memanggilku, silahkan kirim perintah <code>/aqua</code>"
+        pesan += "Untuk memanggilku, silahkan kirim perintah <code>/aqua</code>\n\n"
+        pesan += "Terus, untuk hal-hal lain coba pake perintah <code>/about</code>"
         context.bot.send_message(update.effective_message.chat.id, pesan, parse_mode="HTML")    #Mengambil module kirim pesan, kemudian mendapatkan chat id pengguna, kirim pesan dengan variabel pesan, gunakan metode parsing html
 
     elif command == "/aqua":
@@ -111,18 +112,18 @@ def command(update = Update, context = CallbackContext) -> None:
         pesan += "passwd : <code>{}</code>\n".format("*"*3)
         pesan += "database : <code>{}</code>\n".format(buka["database"])
         pesan += "token : <code>{}</code>\n".format(re.compile(r"\d+\:").search(buka["token"]).group() + '*'*3)
-        pesan += "chatid : <code>{}</code>".format(buka["chatid"])
+        pesan += "chatid : <code>{}</code>".format(re.search(r"\d{5}", buka["chatid"]).group() + '*'*3)
         context.bot.send_message(update.effective_message.chat.id, pesan, "HTML")
 
 #Fungsi untuk mengirimkan data hasil dump keseluruhan dalam bentuk file
 def full(update = Update, context = CallbackContext):
-    file_json = open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(getpass.getuser(), datetime.datetime.now().strftime("%Y-%m"), datetime.datetime.now().strftime("%d")), "rb")
+    file_json = open("/home/{}/Documents/BoxDump.d/BoxDump.json".format(getpass.getuser()), "rb")
     context.bot.send_document(update.effective_message.chat.id, document=file_json) #Modul untuk mengirimkan dokumen
 
 #Fungsi untuk mengirimkan data terakhir hasil dump hari ini
 def last(update = Update, context = CallbackContext):
     full = datetime.datetime.now().strftime("%Y/%m/%d")
-    file_json = open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(getpass.getuser(), datetime.datetime.now().strftime("%Y-%m"), datetime.datetime.now().strftime("%d")))
+    file_json = open("/home/{}/Documents/BoxDump.d/BoxDump.json".format(getpass.getuser()))
     baca = file_json.read()
     urai = json.loads(baca)
     cari = re.findall(r"\d{10}", baca)

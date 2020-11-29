@@ -28,8 +28,8 @@ def validate_db():
         return(False)
 
 #Fungsi untuk melakukan sinkronisasi data terakhir pada database lokal
-def sync_db(nama, thn, tgl):
-    buka = open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl))
+def sync_db(nama):
+    buka = open("/home/{}/Documents/BoxDump.d/BoxDump.json".format(nama))
     baca = buka.read()
     urai = json.loads(baca)
     cari = re.findall(r"\d{10}", baca)

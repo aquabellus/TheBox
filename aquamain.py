@@ -1,4 +1,4 @@
-import os, datetime, time, re, logging
+import os, datetime, time, re, logging, getpass
 
 if os.path.exists("log/") == False:
     os.mkdir("log/")
@@ -6,7 +6,6 @@ if os.path.exists("helper/") == False:
     os.mkdir("helper/")
 
 from aquabot import check, minute_count, notif
-from aquastart import nama
 
 logging.basicConfig(filename='log/aqualog.log', filemode='a', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.WARNING)
 
@@ -32,6 +31,16 @@ def main():
     a = 0
     b = 0
     while True:
+        print("      #############################")
+        print("     #                           #")
+        print("    #          TheBox           #")
+        print("   #   Flood Detector System   #")
+        print("  #                           #")
+        print(" #############################")
+        print("https://github.com/aquabellus")
+        print("\n"*1)
+        print("Selamat Datang {}".format(getpass.getuser()))
+        print("")
         if os.path.exists("log/aqualog.log") == False:
             open("log/aqualog.log", "w",)
         minute = datetime.datetime.now().strftime("%M")
@@ -44,16 +53,6 @@ def main():
                 a = minute_count()
         else:
             a = 0
-        print("      #############################")
-        print("     #                           #")
-        print("    #          TheBox           #")
-        print("   #   Flood Detector System   #")
-        print("  #                           #")
-        print(" #############################")
-        print("https://github.com/aquabellus")
-        print("\n"*3)
-        print("Selamat Datang {}".format(nama))
-        print("")
         if check_bot() == False:
             print("Bot Telegram Tidak Terdeteksi")
             if b == 0:

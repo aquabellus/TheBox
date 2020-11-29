@@ -119,7 +119,7 @@ s3 = int()
 
 if __name__ == "__main__":
     from aquabot import notif, alert, pressed
-    from aquasetup import insert_db, validate_db, sync_db
+    from aquasetup import insert_db, sync_db
     while True:
         thn = datetime.datetime.now().strftime("%Y-%m")
         tgl = datetime.datetime.now().strftime("%d")

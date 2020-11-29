@@ -32,8 +32,6 @@ def validate_db():
     database=json_setup["database"]
     )
 
-    if db.is_connected():
-        print("Koneksi Ke DataBase Berhasil !!!")
     cursor = db.cursor()
     cursor.execute("SELECT * from BoxDump ORDER BY id DESC LIMIT 1")
     data = cursor.fetchall()
@@ -42,6 +40,19 @@ def validate_db():
         return(re.search(r"\d{14}", baca).group())
     except:
         return(False)
+
+def sync_db(nama, thn, tgl):
+    buka = open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl))
+    baca = buka.read()
+    urai = json.loads(baca)
+    cari = re.findall(r"\d{10}", baca)
+    hitung = len(cari)
+    ambil = urai[re.search(r"\d+\/\d+\/\d+", baca).group()][int(hitung) - 1]
+    kunci = re.search(r"\d{12}", str(ambil)).group()
+    try:
+        re.search(kunci + r"\d{2}", str(validate_db())).group()
+    except(AttributeError):
+        insert_db(ambil["Timestamp"], ambil["Status"], ambil["Tinggi"], ambil["Jam"])
 
 def create_db():
     db = mysql.connector.connect(

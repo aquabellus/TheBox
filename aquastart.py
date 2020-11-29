@@ -119,7 +119,7 @@ s3 = int()
 
 if __name__ == "__main__":
     from aquabot import notif, alert, pressed
-    from aquasetup import insert_db, validate_db
+    from aquasetup import insert_db, validate_db, sync_db
     while True:
         thn = datetime.datetime.now().strftime("%Y-%m")
         tgl = datetime.datetime.now().strftime("%d")
@@ -145,14 +145,6 @@ if __name__ == "__main__":
                         notif(str_status)
                         insert_db(timestamp, str_status, str_tinggi, jam)
                         insert_server(timestamp, full, jam, str_tinggi, str_status)
-                        if re.search(r"{}\d\d".format(datetime.datetime.now().strftime("%Y%m%d%H%M")), str(validate_db())):
-                            print("Data valid")
-                        else:
-                            with open("/home/{}/Documents/BoxDump.d/singgah.json".format(nama), "w") as data:
-                                muat = json.dumps(report, indent=4)
-                                data.write(muat)
-                            buka = json.loads(open("/home/{}/Documents/BoxDump.d/singgah.json").read())
-                            insert_db(buka["Timestamp"], buka["Status"], buka["Tinggi"], buka["Jam"])
                         with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
                             data = json.load(json_file)
                             temp = data["{}".format(full)]
@@ -164,14 +156,6 @@ if __name__ == "__main__":
                     notif(str_status)
                     insert_db(timestamp, str_status, str_tinggi, jam)
                     insert_server(timestamp, full, jam, str_tinggi, str_status)
-                    if re.search(r"{}\d\d".format(datetime.datetime.now().strftime("%Y%m%d%H%M")), str(validate_db())):
-                        print("Data valid")
-                    else:
-                        with open("/home/{}/Documents/BoxDump.d/singgah.json".format(nama), "w") as data:
-                            muat = json.dumps(report, indent=4)
-                            data.write(muat)
-                        buka = json.loads(open("/home/{}/Documents/BoxDump.d/singgah.json").read())
-                        insert_db(buka["Timestamp"], buka["Status"], buka["Tinggi"], buka["Jam"])
                     with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
                         data = json.load(json_file)
                         temp = data["{}".format(full)]
@@ -185,14 +169,6 @@ if __name__ == "__main__":
                         notif(str_status)
                         insert_db(timestamp, str_status, str_tinggi, jam)
                         insert_server(timestamp, full, jam, str_tinggi, str_status)
-                        if re.search(r"{}\d\d".format(datetime.datetime.now().strftime("%Y%m%d%H%M")), str(validate_db())):
-                            print("Data valid")
-                        else:
-                            with open("/home/{}/Documents/BoxDump.d/singgah.json".format(nama), "w") as data:
-                                muat = json.dumps(report, indent=4)
-                                data.write(muat)
-                            buka = json.loads(open("/home/{}/Documents/BoxDump.d/singgah.json").read())
-                            insert_db(buka["Timestamp"], buka["Status"], buka["Tinggi"], buka["Jam"])
                         with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
                             data = json.load(json_file)
                             temp = data["{}".format(full)]
@@ -204,14 +180,6 @@ if __name__ == "__main__":
                     notif(str_status)
                     insert_db(timestamp, str_status, str_tinggi, jam)
                     insert_server(timestamp, full, jam, str_tinggi, str_status)
-                    if re.search(r"{}\d\d".format(datetime.datetime.now().strftime("%Y%m%d%H%M")), str(validate_db())):
-                        print("Data valid")
-                    else:
-                        with open("/home/{}/Documents/BoxDump.d/singgah.json".format(nama), "w") as data:
-                            muat = json.dumps(report, indent=4)
-                            data.write(muat)
-                        buka = json.loads(open("/home/{}/Documents/BoxDump.d/singgah.json").read())
-                        insert_db(buka["Timestamp"], buka["Status"], buka["Tinggi"], buka["Jam"])
                     with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
                         data = json.load(json_file)
                         temp = data["{}".format(full)]
@@ -223,14 +191,6 @@ if __name__ == "__main__":
                     notif(str_status)
                     insert_db(timestamp, str_status, str_tinggi, jam)
                     insert_server(timestamp, full, jam, str_tinggi, str_status)
-                    if re.search(r"{}\d\d".format(datetime.datetime.now().strftime("%Y%m%d%H%M")), str(validate_db())):
-                        print("Data valid")
-                    else:
-                        with open("/home/{}/Documents/BoxDump.d/singgah.json".format(nama), "w") as data:
-                            muat = json.dumps(report, indent=4)
-                            data.write(muat)
-                        buka = json.loads(open("/home/{}/Documents/BoxDump.d/singgah.json").read())
-                        insert_db(buka["Timestamp"], buka["Status"], buka["Tinggi"], buka["Jam"])
                     with open("/home/{}/Documents/BoxDump.d/{}/{}.json".format(nama, thn, tgl)) as json_file:
                         data = json.load(json_file)
                         temp = data["{}".format(full)]
@@ -265,6 +225,7 @@ if __name__ == "__main__":
             print("Siaga I : {}".format(s1))
             print("Siaga II : {}".format(s2))
             print("Bahaya : {}".format(s3))
+            sync_db(nama, thn, tgl)
         except:
             logging.warning("This will get logged to a file")
         finally:

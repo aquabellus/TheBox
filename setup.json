@@ -3,6 +3,7 @@
     "user" : "YOUR USER",
     "passwd" : "YOUR PASSWORD",
     "database" : "YOUR DATABASE",
+    "auth" : "mysql_native_password",
     "token" : "YOUR TOKEN",
     "chatid" : "YOUR CHAT ID",
     "SI" : "FIRST HEIGHT",

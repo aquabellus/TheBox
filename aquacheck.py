@@ -39,7 +39,7 @@ def check_bot():
 
 def check_database():
     try:
-        db = mysql.connector.connect( host=baca["host"], user=baca["user"], passwd=baca["passwd"] )
+        db = mysql.connector.connect( host=baca["host"], user=baca["user"], passwd=baca["passwd"], auth_plugin=baca["auth"] )
         db.is_connected()
     except:
         if re.search(r"YOUR\s\w+", baca["host"]):

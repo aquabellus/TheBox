@@ -11,7 +11,7 @@ def insert_db(timestamp, status, tinggi, jam):
     tgl = datetime.datetime.now().strftime("%Y/%m/%d")
     cursor = db.cursor()
     sql = "INSERT INTO BoxDump (timestamp, tanggal, status, tinggi, jam) VALUES (%s, %s, %s, %s, %s)"
-    val = (timestamp, tgl, status, tinggi, jam)
+    val = (timestamp, tgl, status, tinggi + " cm", jam)
     cursor.execute(sql, val)
     db.commit()
     print("Status {} Pukul {} Telah Berhasil Ditambahkan".format(status, jam))

@@ -94,9 +94,9 @@ def status():
     elif (GPIO.input(12) == False):
         status = str("Siaga II")
         if (GPIO.input(16) == False):
-            status = str("Bahaya")
+            status = str("Siaga II")
     elif (GPIO.input(16) == False):
-        status = str("Bahaya")
+        status = str("Siaga II")
         if (GPIO.input(18) == False):
             status = str("Bahaya")
     elif (GPIO.input(18) == False):
@@ -117,9 +117,9 @@ def tinggi():
     elif (GPIO.input(12) == False):
         tinggi = str(json_setup["SII"])
         if (GPIO.input(16) == False):
-            tinggi = str(json_setup["B"])
+            tinggi = str(json_setup["SII"])
     elif (GPIO.input(16) == False):
-        tinggi = str(json_setup["B"])
+        tinggi = str(json_setup["SII"])
         if (GPIO.input(18) == False):
             tinggi = str(json_setup["B"])
     elif (GPIO.input(18) == False):
@@ -149,9 +149,21 @@ def bundle_2():
         temp.append(report)
     write_json(data)
 
+def danger():
+    while (GPIO.input(22) == False):
+        netral()
+        sleep(1)
+        merah()
+        sleep(1)
+        alert()
+        sleep(1)
+        if (GPIO.input(22) == True):
+            print("Tombol telah ditekan")
+            pressed()
+            break
+
 s1 = int()
 s2 = int()
-s3 = int()
 
 if __name__ == "__main__":
     from aquabot import notif, alert, pressed
@@ -198,11 +210,9 @@ if __name__ == "__main__":
                     s1 = 0
             elif (GPIO.input(16) == False):
                 if (GPIO.input(18) == False):
-                    s3 += 1
-                    if s3 == 5:
-                        bundle_1()
-                        bundle_2()
-                        s3 = 0
+                    bundle_1()
+                    bundle_2()
+                    danger()
                 s2 += 1
                 if s2 == 10:
                     bundle_1()
@@ -212,18 +222,7 @@ if __name__ == "__main__":
                 if (GPIO.input(16) == True):
                     bundle_1()
                     bundle_2()
-                    while (GPIO.input(22) == False):
-                        netral()
-                        sleep(1)
-                        merah()
-                        sleep(1)
-                        alert()
-                        sleep(1)
-                        if (GPIO.input(22) == True):
-                            print("Tombol telah ditekan")
-                            pressed()
-                            break
-                    s3 = 0
+                    danger()
             if (re.compile(r"00:00:0\d").search(jam)):
                 for ulang in range(2):
                     cek()

@@ -16,8 +16,8 @@ GPIO.setup(8, GPIO.IN)   #Sensor Siaga I
 GPIO.setup(10, GPIO.IN)  #Sensor Siaga II
 GPIO.setup(12, GPIO.IN)  #Sensor Siaga III
 GPIO.setup(16, GPIO.IN) #Sensor Siaga IV
-GPIO.input(18, GPIO.IN) #Sensor Bahaya
-GPIO.input(22, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) #Tombol
+GPIO.setup(18, GPIO.IN) #Sensor Bahaya
+GPIO.setup(22, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) #Tombol
 
 def netral():
     GPIO.output(3,True)
@@ -86,19 +86,19 @@ def status():
     if (GPIO.input(8) == False):
         status = str("Siaga I")
         if (GPIO.input(10) == False):
-            status = str("Siaga I|II")
+            status = str("Siaga I")
     elif (GPIO.input(10) == False):
-        status = str("Siaga II")
+        status = str("Siaga I")
         if (GPIO.input(12) == False):
-            status = str("Siaga II|III")
+            status = str("Siaga II")
     elif (GPIO.input(12) == False):
-        status = str("Siaga III")
+        status = str("Siaga II")
         if (GPIO.input(16) == False):
-            status = str("Siaga III|IV")
+            status = str("Bahaya")
     elif (GPIO.input(16) == False):
-        status = str("Siaga IV")
+        status = str("Bahaya")
         if (GPIO.input(18) == False):
-            status = str("Siaga IV|Bahaya")
+            status = str("Bahaya")
     elif (GPIO.input(18) == False):
         status = str("Bahaya")
     return(status)
@@ -109,19 +109,19 @@ def tinggi():
     if (GPIO.input(8) == False):
         tinggi = str(json_setup["SI"])
         if (GPIO.input(10) == False):
-            tinggi = str(json_setup["SI|II"])
+            tinggi = str(json_setup["SI"])
     elif (GPIO.input(10) == False):
-        tinggi = str(json_setup["SII"])
+        tinggi = str(json_setup["SI"])
         if (GPIO.input(12) == False):
-            tinggi = str(json_setup["SII|SIII"])
+            tinggi = str(json_setup["SII"])
     elif (GPIO.input(12) == False):
-        tinggi = str(json_setup["SIII"])
+        tinggi = str(json_setup["SII"])
         if (GPIO.input(16) == False):
-            tinggi = str(json_setup["SIII|IV"])
+            tinggi = str(json_setup["B"])
     elif (GPIO.input(16) == False):
-        tinggi = str(json_setup["SIV"])
+        tinggi = str(json_setup["B"])
         if (GPIO.input(18) == False):
-            tinggi = str(json_setup["SIV|B"])
+            tinggi = str(json_setup["B"])
     elif (GPIO.input(18) == False):
         tinggi = str(json_setup["B"])
     return(tinggi)
@@ -137,10 +137,12 @@ def insert_server(timestamp, tanggal, waktu, ketinggian, status):
     print("Data telah terkirim ke database")
     sleep(1)
 
-def bundle():
+def bundle_1():
     notif(str_status)
     insert_db(timestamp, str_status, str_tinggi, jam)
     insert_server(timestamp, full, jam, str_tinggi, str_status)
+
+def bundle_2():
     with open("/home/{}/Documents/BoxDump.d/BoxDump.json".format(nama)) as json_file:
         data = json.load(json_file)
         temp = data["{}".format(full)]
@@ -150,8 +152,6 @@ def bundle():
 s1 = int()
 s2 = int()
 s3 = int()
-s4 = int()
-s5 = int()
 
 if __name__ == "__main__":
     from aquabot import notif, alert, pressed
@@ -174,37 +174,44 @@ if __name__ == "__main__":
             netral()
             if (GPIO.input(8) == False):
                 if (GPIO.input(10) == False):
-                    s2 += 1
-                    if s2 == 20:
-                        bundle()
-                        s2 = 0
+                    s1 += 1
+                    if s1 == 20:
+                        bundle_1()
+                        bundle_2()
+                        s1 = 0
                 s1 += 1
                 if s1 == 20:
-                    bundle()
+                    bundle_1()
+                    bundle_2()
                     s1 = 0
             elif (GPIO.input(10) == False):
                 if (GPIO.input(12) == False):
-                    s3 += 1
-                    if s3 == 10:
-                        bundle()
-                        s3 = 0
-                s2 += 1
-                if s2 == 20:
-                    bundle()
-                    s2 = 0
+                    s2 += 1
+                    if s2 == 10:
+                        bundle_1()
+                        bundle_2()
+                        s2 = 0
+                s1 += 1
+                if s1 == 20:
+                    bundle_1()
+                    bundle_2()
+                    s1 = 0
             elif (GPIO.input(16) == False):
                 if (GPIO.input(18) == False):
-                    s5 += 1
-                    if s5 == 5:
-                        bundle()
-                        s5 = 0
-                s4 += 1
-                if s4 == 10:
-                    bundle()
-                    s4 = 0
+                    s3 += 1
+                    if s3 == 5:
+                        bundle_1()
+                        bundle_2()
+                        s3 = 0
+                s2 += 1
+                if s2 == 10:
+                    bundle_1()
+                    bundle_2()
+                    s2 = 0
             elif (GPIO.input(18) == False):
                 if (GPIO.input(16) == True):
-                    bundle()
+                    bundle_1()
+                    bundle_2()
                     while (GPIO.input(22) == False):
                         netral()
                         sleep(1)
@@ -216,15 +223,13 @@ if __name__ == "__main__":
                             print("Tombol telah ditekan")
                             pressed()
                             break
-                    s5 = 0
+                    s3 = 0
             if (re.compile(r"00:00:0\d").search(jam)):
                 for ulang in range(2):
                     cek()
                 s1 = 0
                 s2 = 0
                 s3 = 0
-                s4 = 0
-                s5 = 0
 
             print("#########################")
             print("")
@@ -236,9 +241,7 @@ if __name__ == "__main__":
             print("Hasil :")
             print("Siaga I : {}".format(s1))
             print("Siaga II : {}".format(s2))
-            print("Siaga III : {}".format(s3))
-            print("Siaga IV : {}".format(s4))
-            print("Bahaya : {}".format(s5))
+            print("Bahaya : {}".format(s3))
             sync_db(nama)
         except:
             logging.warning("This will get logged to a file")

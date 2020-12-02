@@ -129,10 +129,10 @@ def bundle_1():
 
 def kirim():
     a = datetime.datetime.now().strftime("%S")
-    a += 2
+    a = int(a) + 5
     if a >= 60:
         a -= 60
-    return(int(a))
+    return(a)
 
 s1 = int()
 s2 = int()
@@ -203,7 +203,7 @@ if __name__ == "__main__":
                         sleep(0.25)
                         GPIO.output(3, False)
                         sleep(0.25)
-                        if str(datetime.datetime.now().strftime("%S")) == str(alrt):
+                        if int(datetime.datetime.now().strftime("%S")) == int(alrt):
                             alert()
                             alrt = kirim()
                         if (GPIO.input(22) == True):

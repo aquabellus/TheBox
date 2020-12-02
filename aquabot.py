@@ -1,10 +1,12 @@
 import telegram, datetime, logging, psutil, os, re, signal
 import getpass, json
+import json.decoder as jsonError
 from numpy import random
-#Import module
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CommandHandler, Filters, MessageHandler, CallbackQueryHandler, CallbackContext
 from time import sleep
+from urllib import request
+from functools import wraps
 
 #Konfigurasi untuk menyimpan log
 logging.basicConfig(filename='log/aqualog.log', filemode='a', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.WARNING)
@@ -32,18 +34,34 @@ def greet():
     else:
         return("Malam")
 
+def typing(func):
+    @wraps(func)
+    def command_func(update, context, *args, **kwargs):
+        context.bot.send_chat_action(update.effective_message.chat.id, action=telegram.ChatAction.TYPING)
+        return func(update, context, *args, **kwargs)
+    return command_func
+
+def upload(func):
+    @wraps(func)
+    def command_func(update, context, *args, **kwargs):
+        context.bot.send_chat_action(update.effective_message.chat.id, action=telegram.ChatAction.UPLOAD_DOCUMENT)
+        return func(update, context, *args, **kwargs)
+    return command_func
+
+def chatbot(pesan):
+    saring = re.sub(r" ", "+", pesan)
+    jawaban = request.urlopen("https://chatbot-indo.herokuapp.com/get/{}".format(saring))
+    urai = json.loads(jawaban.read())
+    return(urai["msg"])
+
 #Fungsi agar Aqua membalas pesan berupa text
+@typing
 def text(update, context):
-    jawaban = [
-        "Maaf, Aqua bukanlah bot interaktif.",
-        "申し訳ありませんが、Aquaはインタラクティブなボットではありません。",
-        "Sorry, Aqua is not an interactive bot.",
-        "Entschuldigung, Aqua ist kein interaktiver Bot.",
-        "Извините, Aqua не интерактивный бот."
-    ]
-    context.bot.send_message(update.effective_message.chat.id, text=jawaban[int(random.randint(0, len(jawaban)))])
+    jawaban = chatbot(update.effective_message.text)
+    context.bot.send_message(update.effective_message.chat.id, text=jawaban)
 
 #Fungsi perintah yang dapat dijalankan oleh Aqua
+@typing
 def command(update = Update, context = CallbackContext) -> None:
     now = datetime.datetime.now()   #Variabel untuk menunjukkan date/time sekarang
     jam = now.strftime("%H:%M:%S")  #Variabel untuk mengambil saat sekarang berdasarkan format yang telah ditentukan
@@ -116,27 +134,50 @@ def command(update = Update, context = CallbackContext) -> None:
         context.bot.send_message(update.effective_message.chat.id, pesan, "HTML")
 
 #Fungsi untuk mengirimkan data hasil dump keseluruhan dalam bentuk file
+@upload
 def full(update = Update, context = CallbackContext):
+    try:
+        open("home/{}/Documents/BoxDump.d/BoxDump.json".format(getpass.getuser()))
+    except FileNotFoundError:
+        update.message.reply_text("File dump tidak ditemukan")
+        return
     file_json = open("/home/{}/Documents/BoxDump.d/BoxDump.json".format(getpass.getuser()), "rb")
     context.bot.send_document(update.effective_message.chat.id, document=file_json) #Modul untuk mengirimkan dokumen
 
 #Fungsi untuk mengirimkan data terakhir hasil dump hari ini
+@typing
 def last(update = Update, context = CallbackContext):
+    try:
+        data = open("home/{}/Documents/BoxDump.d/BoxDump.json".format(getpass.getuser()))
+        baca = data.read()
+        urai = json.loads(baca)
+    except FileNotFoundError:
+        update.message.reply_text("File dump tidak ditemukan")
+        return
+    except (AttributeError, jsonError.JSONDecodeError):
+        update.message.reply_text("File gagal dibuka")
+        return
     full = datetime.datetime.now().strftime("%Y/%m/%d")
     file_json = open("/home/{}/Documents/BoxDump.d/BoxDump.json".format(getpass.getuser()))
     baca = file_json.read()
     urai = json.loads(baca)
-    cari = re.findall(r"\d{10}", baca)
+    cari = re.findall(r"\d{14}", baca)
     hitung = len(cari)
-    ambil = urai[re.search(r"\d+\/\d+\/\d+", baca).group()][int(hitung) - 1]
-    pesan = "<b>{}</b>\n\n".format(full)
-    pesan += "Timestamp : <code>{}</code>\n".format(ambil["Timestamp"])
-    pesan += "Status : {}\n".format(ambil["Status"])
-    pesan += "Tinggi : {}\n".format(ambil["Tinggi"])
-    pesan += "Jam : {}\n".format(ambil["Jam"])
-    update.message.reply_text(pesan, parse_mode="HTML")
+    if int(hitung) >= 10:
+        filedump = open("/home/{}/Documents/BoxDump.d/BoxDump.json".format(getpass.getuser()), "rb")
+        update.message.reply_text("Dump terlalu banyak")
+        context.bot.send_document(update.effective_message.chat.id, document=filedump)
+    else:
+        ambil = urai[re.search(r"\d+\/\d+\/\d+", baca).group()][int(hitung) - 1]
+        pesan = "<b>{}</b>\n\n".format(full)
+        pesan += "Timestamp : <code>{}</code>\n".format(ambil["Timestamp"])
+        pesan += "Status : {}\n".format(ambil["Status"])
+        pesan += "Tinggi : {} cm\n".format(ambil["Tinggi"])
+        pesan += "Jam : {}\n".format(ambil["Jam"])
+        update.message.reply_text(pesan, parse_mode="HTML")
 
 #Fungsi untuk membersihkan data log
+@typing
 def clear(update = Update, context = CallbackContext):
     update.message.reply_text("Membersihkan log ...")
     if os.path.exists("log/aqualog.log"):
@@ -148,6 +189,7 @@ def clear(update = Update, context = CallbackContext):
     context.bot.send_message(update.effective_message.chat.id, jawaban)
 
 #Fungsi untuk mengetahui status "aquamain.py"
+@typing
 def aquamain(update = Update, context = CallbackContext):
     keyboard = [    #Penyederhanaan variabel untuk penggunaan inline_keyboard
         [
@@ -163,6 +205,7 @@ def aquamain(update = Update, context = CallbackContext):
     update.message.reply_text(pesan, parse_mode="HTML", reply_markup=inline_markup) #Menggunakan markup inline_markup
 
 #Fungsi untuk melakukan mulai ulang pada telegrambot
+@typing
 def reboot(update = Update, context = CallbackContext):
     keyboard = [
         [
@@ -177,6 +220,7 @@ def reboot(update = Update, context = CallbackContext):
     update.message.reply_text(pesan, reply_markup=inline_markup)
 
 #Fungsi untuk melakukan konfigurasi database server lokal
+@typing
 def setup(update = Update, context = CallbackContext):
     keyboard = [
         [
@@ -198,15 +242,24 @@ def setup(update = Update, context = CallbackContext):
     update.message.reply_text(pesan, parse_mode="HTML", reply_markup=inline_markup)
 
 #Fungsi untuk mengirimkan log
+@typing
 def log(update = Update, context = CallbackContext):
     if os.path.exists("log/aqualog.log"):
-        jawaban = "Ini log nya.... 😊️\n\n"
-        pesan = open("log/aqualog.log").read()
+        with open("log/aqualog.log") as data:
+            panjang = len(data.read())
+        if int(panjang) >= 2000:
+            logfile = open("log/aqualog.log", "rb")
+            update.message.reply_text("Log terlalu panjang")
+            context.bot.send_document(update.effective_message.chat.id, document=logfile)
+        elif int(panjang) <= 0:
+            update.message.reply_text("Log kosong")
+        else:
+           update.message.reply_text(text=open("log/aqualog.log").read())
     else:
-        pesan = "Log tidak ditemukan"
-    update.message.reply_text(jawaban + pesan)
+        update.message.reply_text("Log tidak ditemukan")
 
 #Fungsi untuk mengirimkan log dalam bentuk file
+@upload
 def getlog(update = Update, context = CallbackContext):
     if os.path.exists("log/aqualog.log"):
         logfile = open("log/aqualog.log", "rb")
@@ -215,6 +268,7 @@ def getlog(update = Update, context = CallbackContext):
         update.message.reply_text("Log tidak ditemukan")
 
 #Fungsi untuk menampilkan status "aquastart.py"
+@typing
 def status(update = Update, context = CallbackContext):
     keyboard = [
         [
@@ -288,6 +342,7 @@ def check_aquamain():
     return(pid) #Apabila PID ditemukan maka kembalikan value menjadi pid
 
 #Fungsi untuk menangani callback data
+@typing
 def button(update: Update , context: CallbackContext) -> None:
     query = update.callback_query
     query.answer()

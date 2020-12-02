@@ -6,9 +6,7 @@
     "auth" : "mysql_native_password",
     "token" : "YOUR TOKEN",
     "chatid" : "YOUR CHAT ID",
-    "SI" : "FIRST HEIGHT",
-    "SI/II" : "FIRST/SECOND HEIGHT",
-    "SII" : "SECOND HEIGHT",
-    "SII/B" : "SECOND/DANGER HEIGHT",
-    "B" : "DANGER HEIGHT"
+    "SI" : "FIRST LEVEL",
+    "SII" : "SECOND LEVEL",
+    "B" : "DANGER LEVEL"
 }

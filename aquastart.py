@@ -10,34 +10,12 @@ GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
 
 GPIO.setup(3, GPIO.OUT)  #LED Merah
-GPIO.setup(5, GPIO.OUT)  #LED Hijau
-GPIO.setup(7, GPIO.OUT)  #LED Biru
 GPIO.setup(8, GPIO.IN)   #Sensor Siaga I
 GPIO.setup(10, GPIO.IN)  #Sensor Siaga II
 GPIO.setup(12, GPIO.IN)  #Sensor Siaga III
 GPIO.setup(16, GPIO.IN) #Sensor Siaga IV
 GPIO.setup(18, GPIO.IN) #Sensor Bahaya
 GPIO.setup(22, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) #Tombol
-
-def netral():
-    GPIO.output(3,True)
-    GPIO.output(5,True)
-    GPIO.output(7,True)
-
-def merah():
-    GPIO.output(3,False)
-    GPIO.output(5,True)
-    GPIO.output(7,True)
-
-def kuning():
-    GPIO.output(3,False)
-    GPIO.output(5,False)
-    GPIO.output(7,True)
-
-def hijau():
-    GPIO.output(3,True)
-    GPIO.output(5,False)
-    GPIO.output(7,True)
 
 #Template yang digunakan untuk menulis file .json
 tmprpt = {
@@ -151,11 +129,10 @@ def bundle_2():
 
 def danger():
     while (GPIO.input(22) == False):
-        netral()
-        sleep(1)
-        merah()
-        sleep(1)
         alert()
+        GPIO.output(3, False)
+        sleep(1)
+        GPIO.output(3, True)
         sleep(1)
         if (GPIO.input(22) == True):
             print("Tombol telah ditekan")
@@ -183,7 +160,7 @@ if __name__ == "__main__":
 
         try:
             cek()
-            netral()
+            GPIO.output(3, True)
             if (GPIO.input(8) == False):
                 if (GPIO.input(10) == False):
                     s1 += 1

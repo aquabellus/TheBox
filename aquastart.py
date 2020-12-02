@@ -111,36 +111,33 @@ def insert_server(timestamp, tanggal, waktu, ketinggian, status):
     sT = re.sub(r"[ ]", "+", status)
     st = re.sub(r"[|]", "%7C", sT)
     tg = re.sub(r"[|]", "%7C", ketinggian)
-    request.urlopen("http://10.30.1.247/proses.php?Timestamp={}&Tanggal={}&Waktu={}&Ketinggian={}+cm&Status={}".format(timestamp, tt, wk, tg, st))
+    request.urlopen("http://10.30.1.247/html/proses.php?Timestamp={}&Tanggal={}&Waktu={}&Ketinggian={}+cm&Status={}".format(timestamp, tt, wk, tg, st))
     print("Data telah terkirim ke database")
     sleep(1)
 
-def bundle_1():
+def bundle_2():
     notif(str_status)
     insert_db(timestamp, str_status, str_tinggi, jam)
     insert_server(timestamp, full, jam, str_tinggi, str_status)
 
-def bundle_2():
+def bundle_1():
     with open("/home/{}/Documents/BoxDump.d/BoxDump.json".format(nama)) as json_file:
         data = json.load(json_file)
         temp = data["{}".format(full)]
         temp.append(report)
     write_json(data)
 
-def danger():
-    while (GPIO.input(22) == False):
-        alert()
-        GPIO.output(3, False)
-        sleep(1)
-        GPIO.output(3, True)
-        sleep(1)
-        if (GPIO.input(22) == True):
-            print("Tombol telah ditekan")
-            pressed()
-            break
+def kirim():
+    a = datetime.datetime.now().strftime("%S")
+    a += 2
+    if a >= 60:
+        a -= 60
+    return(int(a))
 
 s1 = int()
 s2 = int()
+s3 = int()
+alrt = int()
 
 if __name__ == "__main__":
     from aquabot import notif, alert, pressed
@@ -160,7 +157,7 @@ if __name__ == "__main__":
 
         try:
             cek()
-            GPIO.output(3, True)
+            GPIO.output(3, False)
             if (GPIO.input(8) == False):
                 if (GPIO.input(10) == False):
                     s1 += 1
@@ -189,7 +186,7 @@ if __name__ == "__main__":
                 if (GPIO.input(18) == False):
                     bundle_1()
                     bundle_2()
-                    danger()
+                    GPIO.input(3, True)
                 s2 += 1
                 if s2 == 10:
                     bundle_1()
@@ -199,7 +196,21 @@ if __name__ == "__main__":
                 if (GPIO.input(16) == True):
                     bundle_1()
                     bundle_2()
-                    danger()
+                    alert()
+                    alrt = kirim()
+                    while (GPIO.input(22) == False):
+                        GPIO.output(3, True)
+                        sleep(0.25)
+                        GPIO.output(3, False)
+                        sleep(0.25)
+                        if str(datetime.datetime.now().strftime("%S")) == str(alrt):
+                            alert()
+                            alrt = kirim()
+                        if (GPIO.input(22) == True):
+                            pressed()
+                            print("Tombol telah ditekan")
+                            break
+                        
             if (re.compile(r"00:00:0\d").search(jam)):
                 for ulang in range(2):
                     cek()

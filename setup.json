@@ -7,8 +7,6 @@
     "token" : "YOUR TOKEN",
     "chatid" : "YOUR CHAT ID",
     "SI" : "FIRST LEVEL",
-    "SI|II" : "FIRST|SECOND LEVEL",
     "SII" : "SECOND LEVEL",
-    "SII|B" : "SECOND|DANGER LEVEL",
     "B" : "DANGER LEVEL"
 }

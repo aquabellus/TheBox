@@ -179,14 +179,17 @@ def last(update = Update, context = CallbackContext):
 #Fungsi untuk membersihkan data log
 @typing
 def clear(update = Update, context = CallbackContext):
-    update.message.reply_text("Membersihkan log ...")
-    if os.path.exists("log/aqualog.log"):
-        open("log/aqualog.log", "w")
-        jawaban = "Log berhasil dibersihkan"
+    if int(update.effective_message.chat.id) == int(json_setup["chatid"]):
+        update.message.reply_text("Membersihkan log ...")
+        if os.path.exists("log/aqualog.log"):
+            open("log/aqualog.log", "w")
+            jawaban = "Log berhasil dibersihkan"
+        else:
+            jawaban = "File log tidak ditemukan"
+        sleep(1)
+        context.bot.send_message(update.effective_message.chat.id, jawaban)
     else:
-        jawaban = "File log tidak ditemukan"
-    sleep(1)
-    context.bot.send_message(update.effective_message.chat.id, jawaban)
+        context.bot.send_message(update.effective_message.chat.id, "Kamu orang asing 😡\nGak boleh suruh-suruh 😤")
 
 #Fungsi untuk mengetahui status "aquamain.py"
 @typing
@@ -344,6 +347,15 @@ def check_aquamain():
 #Fungsi untuk menangani callback data
 @typing
 def button(update: Update , context: CallbackContext) -> None:
+    stranger = [
+        "Kamu siapa ?",
+        "Aqua gak kenal kamu",
+        "Gak ah, baru kenal udah nyuruh-nyuruh",
+        "Gak mau 😛",
+        "Bayar dulu dong 😏",
+        "Umm, enggak deh.\nAqua takut",
+        "Entar aja yaa, kalo kita udah lama kenal 😋"
+    ]
     query = update.callback_query
     query.answer()
     if query.data == "mulai":
@@ -375,73 +387,88 @@ def button(update: Update , context: CallbackContext) -> None:
         query.edit_message_text("Kamu serius ?", reply_markup=inline_markup)
 
     elif query.data == "reboot":
-        query.edit_message_text("Rebooting bot ...")
-        a = os.popen("ps ax | grep aquabot.py | grep -v grep").read()
-        try:
-            os.kill(int(re.search(r"\d+", a).group()), signal.SIGKILL)
-        except:
-            pesan = "Bot gagal dimulai ulang"
-            context.bot.send_message(update.effective_message.chat.id, pesan)
-
-    elif query.data == "tentu":
-        query.edit_message_text("Menghentikan Script ...")
-        a = os.popen("ps ax | grep aquastart.py | grep -v grep").read()
-        if check() == True:
+        if int(update.effective_message.chat.id) == int(json_setup["chatid"]):
+            query.edit_message_text("Rebooting bot ...")
+            a = os.popen("ps ax | grep aquabot.py | grep -v grep").read()
             try:
-                os.system("kill {}".format(re.search(r"\d+", a).group()))
+                os.kill(int(re.search(r"\d+", a).group()), signal.SIGKILL)
             except:
-                context.bot.send_message(update.effective_message.chat.id, "Gagal Menghentikan Script")
-            context.bot.send_message(update.effective_message.chat.id, "Script Berhasil Dihentikan")
-        else:
-            context.bot.send_message(update.effective_message.chat.id, "Script Sudah Berhenti.")
-
-    elif query.data == "iya":
-        query.edit_message_text(text="Memulai Ulang Script ...")
-        if check() == False:
-            if os.path.exists("aquastart.py"):
-                try:
-                    os.system("lxterminal -e python3 aquastart.py")
-                    sleep(1)
-                finally:
-                    if check() == True:
-                        context.bot.send_message(update.effective_message.chat.id, "Script Berhasil Dimulai Ulang")
-                    else:
-                        context.bot.send_message(update.effective_message.chat.id, "Script Gagal Dimulai Ulang")
-            else:
-                pesan = "File Tidak Ada\nGagal Memulai Ulang !!!"
+                pesan = "Bot gagal dimulai ulang"
                 context.bot.send_message(update.effective_message.chat.id, pesan)
         else:
-            context.bot.send_message(update.effective_message.chat.id, "Script Sudah Berjalan.")
+            query.edit_message_text(stranger[int(random.randint(0, len(stranger)))])
+
+    elif query.data == "tentu":
+        if int(update.effective_message.chat.id) == int(json_setup["chatid"]):
+            query.edit_message_text("Menghentikan Script ...")
+            a = os.popen("ps ax | grep aquastart.py | grep -v grep").read()
+            if check() == True:
+                try:
+                    os.system("kill {}".format(re.search(r"\d+", a).group()))
+                except:
+                    context.bot.send_message(update.effective_message.chat.id, "Gagal Menghentikan Script")
+                context.bot.send_message(update.effective_message.chat.id, "Script Berhasil Dihentikan")
+            else:
+                context.bot.send_message(update.effective_message.chat.id, "Script Sudah Berhenti.")
+        else:
+            query.edit_message_text(stranger[int(random.randint(0, len(stranger)))])
+
+    elif query.data == "iya":
+        if int(update.effective_message.chat.id) == int(json_setup["chatid"]):
+            query.edit_message_text(text="Memulai Ulang Script ...")
+            if check() == False:
+                if os.path.exists("aquastart.py"):
+                    try:
+                        os.system("lxterminal -e python3 aquastart.py")
+                        sleep(1)
+                    finally:
+                        if check() == True:
+                            context.bot.send_message(update.effective_message.chat.id, "Script Berhasil Dimulai Ulang")
+                        else:
+                            context.bot.send_message(update.effective_message.chat.id, "Script Gagal Dimulai Ulang")
+                else:
+                    pesan = "File Tidak Ada\nGagal Memulai Ulang !!!"
+                    context.bot.send_message(update.effective_message.chat.id, pesan)
+            else:
+                context.bot.send_message(update.effective_message.chat.id, "Script Sudah Berjalan.")
+        else:
+            query.edit_message_text(stranger[int(random.randint(0, len(stranger)))])
 
     elif query.data == "100":
-        if os.path.exists("aquasetup.py"):
-            try:
-                os.system("lxterminal -e python3 aquasetup.py")
-                sleep(1)
-            finally:
-                query.edit_message_text("Script berhasil dijalankan\nMohon cek log untuk detail lebih lanjut.")
+        if int(update.effective_message.chat.id) == int(json_setup["chatid"]):
+            if os.path.exists("aquasetup.py"):
+                try:
+                    os.system("lxterminal -e python3 aquasetup.py")
+                    sleep(1)
+                finally:
+                    query.edit_message_text("Script berhasil dijalankan\nMohon cek log untuk detail lebih lanjut.")
+            else:
+                query.edit_message_text("File tidak ditemukan !!!")
         else:
-            query.edit_message_text("File tidak ditemukan !!!")
+            query.edit_message_text(stranger[int(random.randint(0, len(stranger)))])
 
     elif query.data == "aquamain":
-        if os.path.exists("aquamain.py"):
-            if check_aquamain() == False:
-                try:
-                    os.system("lxterminal -e python3 aquamain.py")
-                    sleep(1)
-                except:
-                    query.edit_message_text("Gagal memulai ulang")
-                query.edit_message_text("Berhasil memulai ulang")
-            else:
-                os.system("kill {}".format(int(check_aquamain())))
-                sleep(1)
-                os.system("lxterminal -e python3 aquamain.py")
+        if int(update.effective_message.chat.id) == int(json_setup["chatid"]):
+            if os.path.exists("aquamain.py"):
                 if check_aquamain() == False:
-                    query.edit_message_text("Gagal memulai ulang")
+                    try:
+                        os.system("lxterminal -e python3 aquamain.py")
+                        sleep(1)
+                    except:
+                        query.edit_message_text("Gagal memulai ulang")
+                    query.edit_message_text("Berhasil memulai ulang")
                 else:
-                    query.edit_message_text("aquamain sudah berjalan")
+                    os.system("kill {}".format(int(check_aquamain())))
+                    sleep(1)
+                    os.system("lxterminal -e python3 aquamain.py")
+                    if check_aquamain() == False:
+                        query.edit_message_text("Gagal memulai ulang")
+                    else:
+                        query.edit_message_text("aquamain sudah berjalan")
+            else:
+                query.edit_message_text("File tidak ditemukan")
         else:
-            query.edit_message_text("File tidak ditemukan")
+            query.edit_message_text(stranger[int(random.randint(0, len(stranger)))])
 
     else:
         pesan = [

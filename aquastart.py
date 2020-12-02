@@ -38,17 +38,17 @@ nama = getpass.getuser()
 def cek():
     tgl = datetime.datetime.now().strftime("%d")
     os.makedirs("/home/{}/Documents/BoxDump.d".format(nama), exist_ok=True)
-    file = "/home/{}/Documents/BoxDump.d/BoxDump.json".format(nama)
-    if os.path.exists(file) == False:
-        with open(file, "w") as outfile:
+    fileJson = "/home/{}/Documents/BoxDump.d/BoxDump.json".format(nama)
+    if os.path.exists(fileJson) == False:
+        with open(fileJson, "w") as outfile:
             outfile.write(json_object)
     else:
         try:
-            with open(file) as baca:
+            with open(fileJson) as baca:
                 a = baca.read()
                 re.search(r"\d+\/\d+\/" + str(tgl), a).group()  #Lakukan pencarian dengan pola regex
         except: #Jika file tidak ditemukan, gagal dibuka, atau pencarian pola regex gagal, maka
-            os.system("rm -rf {}".format(file)) #Hapus file
+            os.system("rm -rf {}".format(fileJson)) #Hapus file
 
 for _ in range(2):  #Perulangan dengan hitungan 2
     cek()   #Panggil fungsi cek
@@ -210,7 +210,7 @@ if __name__ == "__main__":
                             pressed()
                             print("Tombol telah ditekan")
                             break
-                        
+
             if (re.compile(r"00:00:0\d").search(jam)):
                 for ulang in range(2):
                     cek()

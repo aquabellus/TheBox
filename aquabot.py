@@ -136,27 +136,12 @@ def command(update = Update, context = CallbackContext) -> None:
 #Fungsi untuk mengirimkan data hasil dump keseluruhan dalam bentuk file
 @upload
 def full(update = Update, context = CallbackContext):
-    try:
-        open("home/{}/Documents/BoxDump.d/BoxDump.json".format(getpass.getuser()))
-    except FileNotFoundError:
-        update.message.reply_text("File dump tidak ditemukan")
-        return
     file_json = open("/home/{}/Documents/BoxDump.d/BoxDump.json".format(getpass.getuser()), "rb")
     context.bot.send_document(update.effective_message.chat.id, document=file_json) #Modul untuk mengirimkan dokumen
 
 #Fungsi untuk mengirimkan data terakhir hasil dump hari ini
 @typing
 def last(update = Update, context = CallbackContext):
-    try:
-        data = open("home/{}/Documents/BoxDump.d/BoxDump.json".format(getpass.getuser()))
-        baca = data.read()
-        urai = json.loads(baca)
-    except FileNotFoundError:
-        update.message.reply_text("File dump tidak ditemukan")
-        return
-    except (AttributeError, jsonError.JSONDecodeError):
-        update.message.reply_text("File gagal dibuka")
-        return
     full = datetime.datetime.now().strftime("%Y/%m/%d")
     file_json = open("/home/{}/Documents/BoxDump.d/BoxDump.json".format(getpass.getuser()))
     baca = file_json.read()

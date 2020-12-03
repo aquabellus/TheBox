@@ -111,7 +111,7 @@ def insert_server(timestamp, tanggal, waktu, ketinggian, status):
     sT = re.sub(r"[ ]", "+", status)
     st = re.sub(r"[|]", "%7C", sT)
     tg = re.sub(r"[|]", "%7C", ketinggian)
-    request.urlopen("http://10.30.1.247/html/proses.php?Timestamp={}&Tanggal={}&Waktu={}&Ketinggian={}+cm&Status={}".format(timestamp, tt, wk, tg, st))
+    request.urlopen("http://aquabellus.pagekite.me/html/proses.php?Timestamp={}&Tanggal={}&Waktu={}&Ketinggian={}+cm&Status={}".format(timestamp, tt, wk, tg, st))
     print("Data telah terkirim ke database")
     sleep(1)
 

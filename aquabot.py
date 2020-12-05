@@ -136,12 +136,26 @@ def command(update = Update, context = CallbackContext) -> None:
 #Fungsi untuk mengirimkan data hasil dump keseluruhan dalam bentuk file
 @upload
 def full(update = Update, context = CallbackContext):
+    try:
+        buka = open("/home/{}/Documents/BoxDump.d/BoxDump.json".format(getpass.getuser()))
+        json.loads(buka.read())
+    except FileNotFoundError:
+        return(context.bot.send_message(update.effective_message.chat.id, "File tidak ditemukan"))
+    except (AttributeError, jsonError.JSONDecodeError):
+        return(context.bot.send_message(update.effective_message.chat.id, "File tidak dapat dibaca"))
     file_json = open("/home/{}/Documents/BoxDump.d/BoxDump.json".format(getpass.getuser()), "rb")
     context.bot.send_document(update.effective_message.chat.id, document=file_json) #Modul untuk mengirimkan dokumen
 
 #Fungsi untuk mengirimkan data terakhir hasil dump hari ini
 @typing
 def last(update = Update, context = CallbackContext):
+    try:
+        buka = open("/home/{}/Documents/BoxDump.d/BoxDump.json".format(getpass.getuser()))
+        json.loads(buka.read())
+    except FileNotFoundError:
+        return(context.bot.send_message(update.effective_message.chat.id, "File tidak ditemukan"))
+    except (AttributeError, jsonError.JSONDecodeError):
+        return(context.bot.send_message(update.effective_message.chat.id, "File tidak dapat dibaca"))
     full = datetime.datetime.now().strftime("%Y/%m/%d")
     file_json = open("/home/{}/Documents/BoxDump.d/BoxDump.json".format(getpass.getuser()))
     baca = file_json.read()

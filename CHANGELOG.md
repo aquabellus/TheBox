@@ -1,5 +1,13 @@
 # Alpha Build #
 
+### 06/12/2020
+- Perbaikan fungsi dan perintah bot
+- Perbaikan integrasi dengan database server
+- Merubah hasil report ke telegram menjadi lebih jelas dan ringkas
+- Penambahan "aquabox" untuk memulai script dengan satu perintah
+- Pembuatan "aquacheck.py" untuk verifikasi data dan layanan
+- Penambahan lisensi "GPL-3.0"
+
 ### 27/11/2020
 - Pembuatan wiki
 - Perbaikan check pid

@@ -510,6 +510,7 @@ if __name__ == "__main__":
         logging.warning('This will get logged to a file')   #Semua log akan disimpan kedalam file
     finally:    #Akhirnya jalankan perintah dibawah
         ready() #Jalankan fungsi ready
+        os.system("clear")
         print("#########################")
         print("")
         print("   Aqua Telegram Bot")
